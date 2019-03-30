@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+			<h:outputScript library="js" name="ccomissao.js" />
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<p:messages id="msgs" showDetail="true" closable="true" />
+
+			<p:panel header="Cadastro Manual de Apolices">
+				<h:form id="form">
+
+					<h:panelGrid columns="4" style="margin-bottom:10px" cellpadding="5">
+
+						<p:outputLabel for="segur" value="Seguradora:" />
+						<p:selectOneMenu id="segur"
+							value="#{cadastroApolice.apoliceBean.seguradora}" required="true"
+							requiredMessage="Selecione a seguradora" label="Seguradora"
+							style="width: 190px">
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+							<f:selectItems value="#{seguradoraView.listarSeguradoras()}"
+								var="perfil" itemValue="#{perfil.nome}"
+								itemLabel="#{perfil.nome}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel for="fim" value="Inicio de Vigência:" />
+						<p:calendar id="fim"
+							value="#{cadastroApolice.apoliceBean.dataVigenciaInicio}"
+							required="true"
+							requiredMessage="Informe a data de termino da vigência"
+							showOn="button" navigator="true" locale="pt_BR" mask="true"
+							pattern="dd/MM/yyyy" style="width:177px" />
+
+						<p:outputLabel for="sup" value="Susep:" />
+						<p:inputText id="sup" maxlength="10"
+							value="#{cadastroApolice.apoliceBean.susep}" />
+
+						<p:outputLabel for="ini" value="Fim da Vigência:" />
+						<p:calendar id="ini"
+							value="#{cadastroApolice.apoliceBean.dataTermino}"
+							required="true"
+							requiredMessage="Informe a data de inicio da vigência"
+							showOn="button" navigator="true" locale="pt_BR" mask="true"
+							pattern="dd/MM/yyyy" style="width:177px" />
+
+						<p:outputLabel for="apo" value="Apolice:" />
+						<p:inputText id="apo" maxlength="10"
+							value="#{cadastroApolice.apoliceBean.numeroApolice}" />
+
+					</h:panelGrid>
+
+					<p:tabView>
+						<p:tab title="Segurado">
+							<h:panelGrid columns="6" style="margin-bottom:10px"
+								cellpadding="5">
+
+								<p:outputLabel for="segu" value="Nome:" />
+								<p:autoComplete id="segu" maxResults="5"
+									value="#{cadastroApolice.segurado.segurado}"
+									completeMethod="#{cadastroApolice.autoCompletar}"
+									required="true" label="Segurado" size="40">
+									<p:ajax event="blur"
+										update="pr, cpfcnpj, tel, cel, cep, bai, cid, est, nu, em"
+										listener="#{cadastroApolice.obterSegurado()}" />
+								</p:autoComplete>
+
+								<p:outputLabel for="pr" value="Produtor" />
+								<p:inputText id="pr"
+									value="#{cadastroApolice.segurado.produtor}" />
+
+								<p:outputLabel for="cpfcnpj" value="CPF/CNPJ" />
+								<p:inputText id="cpfcnpj" maxlength="18"
+									value="#{cadastroApolice.segurado.cpf}" size="18">
+									<p:ajax event="change"
+										listener="#{cadastroApolice.validarIdentidade()}"
+										update="msgs" />
+								</p:inputText>
+
+								<p:outputLabel for="tel" value="Telefone:" />
+								<p:inputMask id="tel" mask="(99) 9999-9999"
+									value="#{cadastroApolice.segurado.telefone}" />
+
+								<p:outputLabel for="cel" value="Celular:" />
+								<p:inputMask id="cel" mask="(99) 99999-9999"
+									value="#{cadastroApolice.segurado.celular}" />
+
+								<p:outputLabel for="cep" value="CEP:" />
+								<p:inputMask id="cep" mask="99999-999"
+									value="#{cadastroApolice.segurado.cep}">
+									<p:ajax event="change" listener="#{cadastroApolice.obterCep()}"
+										update="bai cid est end" />
+								</p:inputMask>
+
+								<p:outputLabel for="bai" value="Bairro:" />
+								<p:inputText id="bai" value="#{cadastroApolice.segurado.bairro}" />
+
+								<p:outputLabel for="cid" value="Cidade:" />
+								<p:inputText id="cid" value="#{cadastroApolice.segurado.cidade}" />
+
+								<p:outputLabel for="est" value="Estado:" />
+								<p:inputText id="est" value="#{cadastroApolice.segurado.uf}" />
+
+								<p:outputLabel for="end" value="Endereço:" />
+								<p:inputText id="end"
+									value="#{cadastroApolice.segurado.endereco}"
+									style="width: 300px" />
+
+								<p:outputLabel for="nu" value="Número:" />
+								<p:inputText id="nu" value="#{cadastroApolice.segurado.numero}" />
+
+								<p:outputLabel for="em" value="E-mail:" />
+								<p:inputText id="em" value="#{cadastroApolice.segurado.email}" />
+
+							</h:panelGrid>
+						</p:tab>
+						<p:tab title="Veiculo">
+							<h:panelGrid columns="4" style="margin-bottom:10px"
+								cellpadding="5">
+
+								<p:outputLabel for="pla" value="Placa:" />									
+								<p:autoComplete id="pla" maxResults="5"
+									value="#{cadastroApolice.veiculoBean.placa}"
+									completeMethod="#{cadastroApolice.autoCompletarVeiculo}"
+									required="true" label="Segurado" size="40">
+									<p:ajax event="blur"
+										update="ano, marca, zkm, chass"
+										listener="#{cadastroApolice.obterVeiculo()}" />
+								</p:autoComplete>
+
+								<p:outputLabel for="ano" value="Ano Fabricacao e ano modelo:" />
+								<p:inputText id="ano"
+									value="#{cadastroApolice.veiculoBean.anoFabricacaoAnoModelo}" />
+
+								<p:outputLabel for="marca" value="Marca/Modelo:" />
+								<p:inputText id="marca"
+									value="#{cadastroApolice.veiculoBean.marcaModelo}" style="width: 300px"/>
+
+								<p:outputLabel for="zkm" value="Zero KM:" />
+								<p:inputText id="zkm"
+									value="#{cadastroApolice.veiculoBean.zeroKm}" />
+
+								<p:outputLabel for="chass" value="Chassi:" />
+								<p:inputText id="chass"
+									value="#{cadastroApolice.veiculoBean.chassi}" />
+							</h:panelGrid>
+						</p:tab>
+					</p:tabView>
+					<p:commandButton value="Salvar" update="msgs" actionListener="#{cadastroApolice.cadastrarApolice()}"/>
+
+				</h:form>
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

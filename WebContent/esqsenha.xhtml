@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Gescor</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<link rel="icon" type="image/png" sizes="16x16" href="resources/images/fav/favicon-16x16.png"/>
+	<style type="text/css">
+<!--
+._body { //
+	background-image: url("#{resource['images/fundo1.png']}");
+	background-image: url(resources/images/fundo2.jpg);
+	background-size: 100%; //
+	background-attachment: fixed;
+}
+
+.spaco {
+	margin: 5px 5px 5px 5px;
+}
+
+.topo {
+	margin-top: 10%;
+}
+
+.menu {
+	height: 100px;
+	background-color: blue;
+}
+
+.anuncio {
+	height: 100px;
+	background-color: green;
+}
+
+.conteudo {
+	height: 100px;
+	background-color: red;
+}
+
+.link {
+	font-size: 12px !important;
+	text-decoration: none;
+}
+-->
+</style>
+
+
+
+	<h:outputStylesheet library="primefaces" name="grid/grid.css" />
+</h:head>
+<h:body styleClass="_body">
+
+	<div class="ui-grid  ui-grid-responsive">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-4  "></div>
+			<div class="ui-grid-col-4  conteudo topo">
+				<h:form>
+				<p:growl id="msgs" showDetail="true" sticky="true" />
+					<p:panel id="panel" header="Entre com seu e-mail">
+						<p:focus context="panel" />
+<!-- 						<p:messages closable="true"  showDetail="true" showSummary="false"/> -->
+						<p:panelGrid columns="3" layout="grid">
+
+							<p:outputLabel for="usuario" value="E-mail:  " />
+							<p:inputText id="usuario" styleClass="spaco" maxlength="40"
+								value="#{usuarioLoginBean.email}" required="true"
+								requiredMessage="Informe um e-mail válido" label="Usuario">
+								<f:validateLength minimum="1" />
+							</p:inputText>
+						</p:panelGrid>
+
+						<p:commandButton value="Enviar" ajax="true" update="@form"
+							action="#{usuarioLoginBean.validarEmail()}" />
+						<p:commandButton value="Voltar" ajax="false" immediate="true"
+							action="#{usuarioLoginBean.voltarLogin()}" />
+
+					</p:panel>
+				</h:form>
+
+			</div>
+			<div class="ui-grid-col-4  "></div>
+		</div>
+	</div>
+</h:body>
+</html>

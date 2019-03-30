@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> -->
+</h:head>
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" showSummary="true" />
+				<!-- <p:growl id="msgs" showDetail="true"/>-->
+				<p:tabView activeIndex="#{graficoView.indexTab}">
+					<p:tab id="COMPONENTE_GRAFICO_SEGURADORA"
+						rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_SEGURADORA')}"
+						title="Grafico Por Seguradoras">
+						<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+							<!-- Inicio do filtro -->
+							<p:panelGrid id="grid" columns="8" layout="grid">
+
+								<p:outputLabel for="gr" value="Ano " />
+								<p:selectOneMenu id="gr" value="#{graficoView.anoSeg}"
+									required="true" label="Ano" style="width: 190px">
+									<f:selectItem itemLabel="Selecione ..." itemValue="" />
+									<f:selectItem itemLabel="2011" itemValue="2011" />
+									<f:selectItem itemLabel="2012" itemValue="2012" />
+									<f:selectItem itemLabel="2013" itemValue="2013" />
+									<f:selectItem itemLabel="2014" itemValue="2014" />
+									<f:selectItem itemLabel="2015" itemValue="2015" />
+									<f:selectItem itemLabel="2016" itemValue="2016" />
+									<f:selectItem itemLabel="2017" itemValue="2017" />
+									<f:selectItem itemLabel="2018" itemValue="2018" />
+									<f:selectItem itemLabel="2019" itemValue="2019" />
+									<f:selectItem itemLabel="2020" itemValue="2020" />
+								</p:selectOneMenu>
+
+								<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+									actionListener="#{graficoView.fazerGraficoSeguradoras}"
+									update="form" icon="ui-icon-disk" />
+							</p:panelGrid>
+							<!-- Fim do filtro -->
+
+						</p:fieldset>
+
+						<p:chart id="grafi" type="line" responsive="true"
+							rendered="#{graficoView.graficoSeguradoras}"
+							model="#{graficoView.lineChartModelSeguradoras}"
+							style="height: 500px" />
+
+						<p:separator />
+						<h:form id="detalhe">
+							<p:dataTable var="lst" value="#{graficoView.listaSeguradoras}"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								paginator="true" rows="6" rowsPerPageTemplate="6,11,16"
+								sortBy="#{lst.mesAno}" reflow="true">
+								<f:facet name="header">
+        						Detalhe
+    						</f:facet>
+
+								<p:column sortBy="#{lst.contador}"
+									headerText="Total de segurados">
+									<h:outputText value="#{lst.contador}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.seguradora}" headerText="Seguradora">
+									<h:outputText value="#{lst.seguradora}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.mesAno}" headerText="Mês">
+									<h:outputText value="#{lst.mesAno}" />
+								</p:column>
+
+								<p:column headerText="Prêmio Líquido">
+									<h:outputText value="#{lst.valor3}">
+										<f:convertNumber type="currency" currencySymbol="R$" />
+									</h:outputText>
+								</p:column>
+
+
+							</p:dataTable>
+
+							<p:dialog header="Detalhe" showEffect="fade" hideEffect="fade"
+								widgetVar="dlg" modal="true" resizable="true">
+								<h:panelGrid id="display" columns="1" cellpadding="5">
+									<p:chart type="pie"
+										rendered="#{graficoView.listaSeguradoraGrafico.size() > 0}"
+										model="#{graficoView.seguradoraPizza}"
+										style="width:500px;height:300px" />
+									<p:separator />
+									<p:dataTable var="graf" style="width:500px" reflow="true"
+										value="#{graficoView.listaSeguradoraGrafico}">
+										<p:column headerText="Situação">
+											<h:outputText value="#{graf.descricao}" />
+										</p:column>
+										<p:column headerText="Total">
+											<h:outputText value="#{graf.contador}" />
+										</p:column>
+
+										<p:column headerText="Seguradora">
+											<h:outputText value="#{graf.seguradora}" />
+										</p:column>
+
+										<p:column headerText="Mês">
+											<h:outputText value="#{graf.mesAno}" />
+										</p:column>
+
+										<p:column headerText="Prêmio Líquido">
+											<h:outputText value="#{graf.valor3}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</p:column>
+									</p:dataTable>
+								</h:panelGrid>
+							</p:dialog>
+
+						</h:form>
+					</p:tab>
+					<p:tab id="COMPONENTE_GRAFICO_FATURAMENTO"
+						rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_FATURAMENTO')}"
+						title="Grafico de Faturamento">
+						<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+							<!-- Inicio do filtro -->
+							<p:panelGrid id="grid3" columns="8" layout="grid">
+
+								<p:outputLabel for="fat" value="Ano " />
+								<p:selectOneMenu id="fat" value="#{graficoView.anoFat}"
+									required="true" label="Ano" style="width: 190px">
+									<f:selectItem itemLabel="Selecione ..." itemValue="" />
+									<f:selectItem itemLabel="2011" itemValue="2011" />
+									<f:selectItem itemLabel="2012" itemValue="2012" />
+									<f:selectItem itemLabel="2013" itemValue="2013" />
+									<f:selectItem itemLabel="2014" itemValue="2014" />
+									<f:selectItem itemLabel="2015" itemValue="2015" />
+									<f:selectItem itemLabel="2016" itemValue="2016" />
+									<f:selectItem itemLabel="2017" itemValue="2017" />
+									<f:selectItem itemLabel="2018" itemValue="2018" />
+									<f:selectItem itemLabel="2019" itemValue="2019" />
+									<f:selectItem itemLabel="2020" itemValue="2020" />
+								</p:selectOneMenu>
+
+								<p:commandButton value="Pesquisar" ajax="true" id="idfat"
+									actionListener="#{graficoView.fazerGraficoFaturamento()}"
+									update="form" icon="ui-icon-disk" />
+							</p:panelGrid>
+							<!-- Fim do filtro -->
+
+						</p:fieldset>
+
+						<p:chart id="fatu" type="bar" responsive="true"
+							rendered="#{graficoView.graficoFaturamento}"
+							model="#{graficoView.barModelFaturamento}" style="height: 400px" />
+
+					</p:tab>
+					<p:tab id="COMPONENTE_GRAFICO_POR_PRODUTOR"
+						rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_POR_PRODUTOR')}"
+						title="Grafico de Faturamento por Produtor">
+						<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+							<!-- Inicio do filtro -->
+							<p:panelGrid id="gridProd" columns="7" layout="grid">
+
+								<p:outputLabel for="fatProd" value="Ano " />
+								<p:selectOneMenu id="fatProd" value="#{graficoView.ano}"
+									required="true" label="Ano" style="width: 150px">
+									<p:ajax listener="#{graficoView.onAnoSelecionado()}"
+										update="produtores" />
+									<f:selectItem itemLabel="Selecione ..." itemValue="" />
+									<f:selectItem itemLabel="2011" itemValue="2011" />
+									<f:selectItem itemLabel="2012" itemValue="2012" />
+									<f:selectItem itemLabel="2013" itemValue="2013" />
+									<f:selectItem itemLabel="2014" itemValue="2014" />
+									<f:selectItem itemLabel="2015" itemValue="2015" />
+									<f:selectItem itemLabel="2016" itemValue="2016" />
+									<f:selectItem itemLabel="2017" itemValue="2017" />
+									<f:selectItem itemLabel="2018" itemValue="2018" />
+									<f:selectItem itemLabel="2019" itemValue="2019" />
+									<f:selectItem itemLabel="2020" itemValue="2020" />
+								</p:selectOneMenu>
+
+
+								<p:outputLabel for="produtores" value="Produtor " />
+								<p:selectOneMenu id="produtores" value="#{graficoView.produtor}"
+									style="width:250px">
+									<!-- <p:ajax event="change" update="gridProd"/> -->
+									<f:selectItem itemLabel="selecione o produtor" itemValue=""
+										noSelectionOption="true" />
+									<f:selectItems value="#{graficoView.produtores}" />
+								</p:selectOneMenu>
+
+								<p:commandButton id="submit" value="Pesquisar" ajax="true"
+									actionListener="#{graficoView.fazerGraficoFaturamentoPorProdutor()}"
+									icon="ui-icon-disk" update="form" />
+							</p:panelGrid>
+							<!-- Fim do filtro -->
+
+						</p:fieldset>
+
+						<p:chart id="fatuProd" type="bar" responsive="true"
+							rendered="#{graficoView.graficoFatProdutor}"
+							model="#{graficoView.barModelFaturamentoPorPordutor}"
+							style="height: 400px" />
+
+					</p:tab>
+					<p:tab id="COMPONENTE_GRAFICO_CRESCIMENTO"
+						rendered="false"
+						title="Grafico de Crescimento">
+						<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+							<!-- Inicio do filtro -->
+							<p:panelGrid id="grid2" columns="8" layout="grid">
+
+								<p:outputLabel for="cresc" value="Ano " />
+								<p:selectOneMenu id="cresc" value="#{graficoView.anoCres}"
+									required="true" label="Ano" style="width: 190px">
+									<f:selectItem itemLabel="Selecione ..." itemValue="" />
+									<f:selectItem itemLabel="2011" itemValue="2011" />
+									<f:selectItem itemLabel="2012" itemValue="2012" />
+									<f:selectItem itemLabel="2013" itemValue="2013" />
+									<f:selectItem itemLabel="2014" itemValue="2014" />
+									<f:selectItem itemLabel="2015" itemValue="2015" />
+									<f:selectItem itemLabel="2016" itemValue="2016" />
+									<f:selectItem itemLabel="2017" itemValue="2017" />
+									<f:selectItem itemLabel="2018" itemValue="2018" />
+									<f:selectItem itemLabel="2019" itemValue="2019" />
+									<f:selectItem itemLabel="2020" itemValue="2020" />
+								</p:selectOneMenu>
+
+								<p:commandButton value="Pesquisar" ajax="true" id="id_"
+									actionListener="#{graficoView.fazerGraficoCrescimento()}"
+									update="form" icon="ui-icon-disk" />
+							</p:panelGrid>
+							<!-- Fim do filtro -->
+
+						</p:fieldset>
+
+						<p:chart id="cres" type="line" responsive="true"
+							rendered="#{graficoView.graficoCrescimento}"
+							model="#{graficoView.lineChartModelCrescimento}"
+							style="height: 400px" />
+
+					</p:tab>
+				</p:tabView>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+<!-- <p:selectOneMenu id="fatProd" value="#{graficoView.ano}" style="width:150px">
+                  <p:ajax listener="#{graficoView.onAnoSelecionado()}" update="produtores" />
+                  <f:selectItem itemLabel="Selecione o ano" itemValue="" noSelectionOption="true" />
+                  <f:selectItems value="#{graficoView.anos}" />
+     </p:selectOneMenu> -->
+</html>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" closable="true" />
+				<!-- 				<p:growl id="msgs" showDetail="false" sticky="true" /> -->
+
+				<p:panel id="basic" header="Nova assinatura"
+					style="margin-bottom:20px">
+					<p:outputPanel deferred="true">
+
+						<h:outputText
+							value="Monte o pacote ideal para a sua Corretora de
+							Seguros"
+							style="font-size: 18px" />
+						<p:separator />
+						<h:panelGrid columns="2" cellpadding="5">
+							<h:panelGrid columns="4" cellpadding="10">
+								<h:outputText value="Razão Social" />
+								<p:inputText id="rz" size="50"
+									placeholder="Informe seu nome ou razão social" required="true"
+									requiredMessage="Informe a razão social"
+									value="#{corretoraView.corretora.razaoSocial}" />
+
+								<h:outputText value="CPF/CNPJ" for="cpnfcnpf" />
+								<p:inputText id="cpnfcnpf" placeholder="Informe o CPF ou CNPJ"
+									size="18" required="true"
+									requiredMessage="Informe o CPF ou CNPJ"
+									value="#{corretoraView.corretora.cpfCnpj}">
+									<p:ajax event="change"
+										listener="#{corretoraView.validarIdentidade()}" update="msgs" />
+								</p:inputText>
+
+								<h:outputText value="E-mail de cobrança" />
+								<p:inputText id="email" placeholder="seu@mail.com.br" size="50"
+									required="true" requiredMessage="Informe o e-mail de cobrança"
+									value="#{corretoraView.corretora.emailCobranca}" />
+
+								<h:outputText value="CEP" />
+								<p:inputMask id="cep" mask="99999-999" size="9"
+									placeholder="00000-000" required="true"
+									requiredMessage="Informe o CEP"
+									value="#{corretoraView.corretora.cep}">
+									<p:ajax event="change" listener="#{corretoraView.obterCep()}"
+										update="end nu ba uf cd" />
+								</p:inputMask>
+
+								<h:outputText value="Endereço" />
+								<p:inputText id="end" size="50" required="true"
+									requiredMessage="Informe o endereço"
+									value="#{corretoraView.corretora.endereco}" />
+
+								<h:outputText value="Número" />
+								<p:inputText id="nu" size="5" required="true"
+									requiredMessage="Informe o número do endereço"
+									value="#{corretoraView.corretora.numero}" />
+
+								<h:outputText value="Bairro" />
+								<p:inputText id="ba" required="true"
+									requiredMessage="Informe o bairro"
+									value="#{corretoraView.corretora.bairro}" />
+
+								<h:outputText value="UF" />
+								<p:inputText id="uf" size="5" required="true"
+									requiredMessage="Informe o estado"
+									value="#{corretoraView.corretora.uf}" />
+
+								<h:outputText value="Cidade" />
+								<p:inputText id="cd" required="true"
+									requiredMessage="Informe a cidade"
+									value="#{corretoraView.corretora.cidade}" />
+
+								<h:outputText value="Complemento" />
+								<p:inputText id="com"
+									value="#{corretoraView.corretora.complemento}" />
+
+								<h:outputText value="Telefone" />
+								<p:inputMask id="tel" mask="(99) 9999-9999"
+								size="11" maxlength="40" placeholder="(00) 0000-0000"
+									value="#{corretoraView.corretora.telefone}" />
+
+								<h:outputText/>
+								<h:outputText/>
+								<p:commandButton value="Quero assinar" update="msgs"
+									actionListener="#{corretoraView.salvarCorretora()}" style="font-size: 18px" />
+
+							</h:panelGrid>
+							<p:panel style="width: 200px" styleClass="center">
+								<h:outputText value="Mensalidade" style="font-size: 18px" />
+								<br />
+								<h:outputText value="R$ 80,00" style="font-size: 28px" />
+								<br />
+								<h:outputText value="/mês" style="font-size: 18px" />
+								<br />
+								<br />
+								<p:separator />
+								<br />
+								<h:outputText value="Valor de" style="font-size: 18px" />
+								<br />
+								<h:outputText value="adesão" style="font-size: 18px" />
+								<br />
+								<h:outputText value="R$ 80,00" style="font-size: 28px" />
+								<br />
+								<p:separator />
+								<br />
+								<h:outputLabel
+									value="Ao prosseguir para a avaliação você declara que leu e entendeu os " />
+								<p:commandLink value=" Termos de Uso"
+									onclick="PF('dlg2').show();" />
+
+							</p:panel>
+						</h:panelGrid>
+						<p:graphicImage value="/resources/images/barras.png" height="30"
+							width="50" />
+						<h:outputText value="#{corretoraView.mensagem}" />
+
+					</p:outputPanel>
+				</p:panel>
+
+				<ui:include src="../termodeuso2.xhtml"></ui:include>
+
+			</h:form>
+
+
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" draggable="false"
+				closable="false">
+				<p:graphicImage name="images/load.gif" width="80" height="50" />
+			</p:dialog>
+
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" closable="true" />
+				<p:panel id="basic" header="Cadastro Categoria/Despesa" footer=" "
+					style="margin-bottom:20px">
+					<p:panelGrid columns="2" cellpadding="5">
+
+						<p:outputLabel for="nome" value="Nome da categoria:" />
+						<p:inputText id="nome" value="#{categoriaView.tipo2}"
+							onchange="javascript:aumentarFonte()"
+							onkeypress="javascript:aumentarFonte();" label="Nome" />
+
+					</p:panelGrid>
+					<p:commandButton value="Incluir nova categoria"
+						onclick="javascript:aumentarFonte()" ajax="false" id="withIcon"
+						action="#{categoriaView.adicionarCategoria()}" icon="ui-icon-disk" />
+
+					<p:separator />
+
+					<p:panelGrid columns="2" style="padding: 5px" layout="grid">
+
+						<p:dataTable id="tbl" var="lst"
+							value="#{categoriaView.listarCategorias()}" editable="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							sortBy="#{lst.id}" style="margin-bottom:20px;">
+
+							<p:ajax event="rowEdit" listener="#{categoriaView.onEdit}"
+								update=":form:msgs" />
+							<p:ajax event="rowEditCancel"
+								listener="#{categoriaView.onCancel}" update=":form:msgs" />
+
+							<f:facet name="header">
+                                Listagem de Categorias
+                            </f:facet>
+
+							<p:column sortBy="#{lst.tipo}">
+								<f:facet name="header">
+									<h:outputText value="Categoria" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.tipo}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.tipo}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column style="width: 15%">
+								<f:facet name="header">
+									<h:outputText value="Editar" />
+								</f:facet>
+								<p:rowEditor />
+							</p:column>
+
+							<p:column style="width: 15%">
+								<f:facet name="header">
+									<h:outputText value="Excluir" />
+								</f:facet>
+								<p:commandLink action="#{categoriaView.removerCategoria()}" update="@form">
+									<f:setPropertyActionListener
+										target="#{categoriaView.categoria}" value="#{lst}" />
+									<p:graphicImage name="images/trash-icon.png" height="20"
+										width="20" />
+									<p:confirm header="Confirmação" message="Confirmar exclusão?"
+										icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+						</p:dataTable>
+
+						<p:tabView value="#{categoriaView.listarCategorias()}" var="item">
+							<p:tab title="#{item.tipo}">
+								<p:commandButton
+									value="Incluir Sub-Categorias para #{item.tipo}" ajax="true"
+									oncomplete="PF('dlg').show();" process="@this"
+									update="@form:display">
+									<f:setPropertyActionListener
+										target="#{categoriaView.categoria}" value="#{item}" />
+								</p:commandButton>
+
+								<p:separator />
+								<p:dataTable id="tbl" var="lst" value="#{item.subTipo}"
+									editable="true"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+									sortBy="#{lst.id}" style="margin-bottom:20px">
+
+									<p:ajax event="rowEdit" listener="#{categoriaView.onEditSub}"
+										update=":form:msgs" />
+									<p:ajax event="rowEditCancel"
+										listener="#{categoriaView.onCancelSub}" update=":form:msgs" />
+
+									<f:facet name="header">
+                                		Listagem de subcategorias
+                           			 </f:facet>
+
+									<p:column sortBy="#{lst.categoria.tipo}">
+										<f:facet name="header">
+											<h:outputText value="Categoria" />
+										</f:facet>
+										<h:outputText value="#{lst.categoria.tipo}" />
+									</p:column>
+
+									<p:column sortBy="#{lst.descricao}">
+										<f:facet name="header">
+											<h:outputText value="Sub-categoria" />
+										</f:facet>
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{lst.descricao}" />
+											</f:facet>
+											<f:facet name="input">
+												<h:inputText value="#{lst.descricao}" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column sortBy="#{lst.custo}">
+										<f:facet name="header">
+											<h:outputText value="Custo" />
+										</f:facet>
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{lst.custo}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:selectOneRadio id="tp" value="#{lst.custo}">
+													<f:selectItem itemLabel="Fixo" itemValue="Fixo" />
+													<f:selectItem itemLabel="Variavel" itemValue="Variavel" />
+												</p:selectOneRadio>
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column sortBy="#{lst.percentagem}">
+										<f:facet name="header">
+											<h:outputText value="Percentagem %" />
+										</f:facet>
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{lst.percentagem}" />
+											</f:facet>
+											<f:facet name="input">
+												<h:inputText value="#{lst.percentagem}" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column style="width: 15%">
+										<f:facet name="header">
+											<h:outputText value="Editar" />
+										</f:facet>
+										<p:rowEditor />
+									</p:column>
+
+									<p:column style="width: 15%">
+										<f:facet name="header">
+											<h:outputText value="Excluir" />
+										</f:facet>
+										<p:commandLink action="#{categoriaView.removerSubtipo()}" update="@form">
+											<f:setPropertyActionListener
+												target="#{categoriaView.subtipo}" value="#{lst}" />
+											<p:graphicImage name="images/trash-icon.png" height="20"
+												width="20" />
+												<p:confirm header="Confirmação" message="Confirmar exclusão?"
+										icon="ui-icon-alert" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+							</p:tab>
+						</p:tabView>
+					</p:panelGrid>
+
+					<p:dialog header="Cadastro de Sub-Categorias" showEffect="fade"
+						hideEffect="fade" widgetVar="dlg" modal="true" resizable="true">
+						<p:panel header="Categorias #{categoriaView.categoria.tipo}">
+							<h:panelGrid id="display" columns="2" cellpadding="5">
+
+								<p:outputLabel for="cat" value="Nome da categoria: " />
+								<p:inputText id="cat" disabled="true"
+									value="#{categoriaView.categoria.tipo}" />
+								<p:outputLabel />
+								<h:inputHidden value="#{categoriaView.categoria.tipo}" />
+
+								<p:outputLabel for="desc" value="Sub-categoria: " />
+								<p:inputText id="desc"
+									value="#{categoriaView.subtipo.descricao}" />
+
+								<p:outputLabel for="tp" value="Custo: " />
+								<p:selectOneRadio id="tp" value="#{categoriaView.subtipo.custo}">
+									<f:selectItem itemLabel="Fixo" itemValue="Fixo" />
+									<f:selectItem itemLabel="Variavel" itemValue="Variavel" />
+								</p:selectOneRadio>
+
+								<p:outputLabel value="Percentagem % "
+									rendered="#{categoriaView.categoria.tipo eq 'ADRIANA'}" />
+								<p:panelGrid columns="1"
+									rendered="#{categoriaView.categoria.tipo eq 'ADRIANA'}">
+									<p:inputText id="per"
+										value="#{categoriaView.subtipo.percentagem}" />
+									<p:slider for="per" />
+								</p:panelGrid>
+
+								<h:outputText value="Clonar despesa? "
+									rendered="#{categoriaView.categoria.tipo eq 'ADRIANA'}" />
+								<p:selectBooleanButton id="clone"
+									rendered="#{categoriaView.categoria.tipo eq 'ADRIANA'}"
+									value="#{categoriaView.subtipo.clonar}" onLabel="Sim"
+									offLabel="Não" style="width:60px" />
+
+								<p:commandButton value="Incluir" ajax="false"
+									action="#{categoriaView.adicionarCategoriaComSub()}">
+								</p:commandButton>
+
+							</h:panelGrid>
+						</p:panel>
+					</p:dialog>
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+					message="Confirmar exclusão?">
+					<p:commandButton value="Sim" type="button"
+						styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+					<p:commandButton value="Não" type="button"
+						styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+				</p:confirmDialog>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+	<script>
+		function aumentarFonte() {
+			texto = document.getElementById("form:nome");
+			alert(texto.innerHTML.toUpperCase());
+		}
+	</script>
+</h:body>
+</html>

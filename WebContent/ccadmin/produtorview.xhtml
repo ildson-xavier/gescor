@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<p:panel header="Pesquisa de Segurados">
+				<h:form id="form">
+					<p:messages id="msgs" showDetail="true" closable="true" />
+					<!-- <p:growl id="msgs" showDetail="true"/>-->
+
+					<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+						<!-- Inicio do filtro -->
+						<h:panelGrid columns="2" style="margin-bottom:10px"
+							cellpadding="3">
+							<p:outputLabel for="nmsegurado" value="Segurado: " />
+							<p:inputText id="nmsegurado" value="#{produtorView.nomeSegurado}"
+								label="Segurado" style="width: 265px">
+							</p:inputText>
+
+							<p:outputLabel for="nmprodutor" value="Produtor: " />
+							<p:inputText id="nmprodutor" value="#{produtorView.nomeProdutor}"
+								label="Produtor" style="width: 265px" />
+
+							<p:selectBooleanButton id="nmcpf"
+								value="#{produtorView.situacao}" onLabel="Cnpj:" offLabel="Cpf:"
+								style="width:60px">
+								<p:ajax update="@form" />
+							</p:selectBooleanButton>
+
+							<p:inputMask id="c" rendered="#{!produtorView.situacao}"
+								value="#{produtorView.cpf}" label="Cpf" style="width: 265px"
+								mask="999.999.999-99" />
+							<p:inputMask id="ca" rendered="#{produtorView.situacao}"
+								value="#{produtorView.cpf}" label="Cnpj" style="width: 265px"
+								mask="99.999.999/9999-99" />
+
+							<!-- 
+                             <p:outputLabel for="apolice" value="Apolice: " />
+                            <p:inputText id="apolice" value="#{produtorView.apolice}" label="Apolice"/>                                                     
+                            -->
+						</h:panelGrid>
+						<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+							actionListener="#{produtorView.pesquisarProdutorPorFiltro()}"
+							update="form" icon="ui-icon-disk" />
+						<!-- Fim do filtro -->
+					</p:fieldset>
+					<p:separator />
+					<p:fieldset legend="Adicição rápida de segurado" toggleable="true"
+						collapsed="true" toggleSpeed="500">
+						<h:panelGrid columns="7" style="margin-bottom:10px"
+							cellpadding="5">
+							<p:outputLabel for="seg" value="Segurado: " />
+							<p:inputText id="seg"
+								value="#{produtorView.produtorBean.segurado}" label="Segurado"
+								style="width: 265px" />
+
+							<p:outputLabel for="prod" value="Produtor: " />
+							<p:autoComplete id="prod" maxResults="2"
+								value="#{produtorView.produtorBean.produtor}"
+								completeMethod="#{lancamentosView.autoCompletarProdutor}"
+								label="Produtor" size="35" />
+
+							<p:selectBooleanButton id="cc" value="#{produtorView.situacao}"
+								onLabel="Cnpj:" offLabel="Cpf:" style="width:60px">
+								<p:ajax update="@form" />
+							</p:selectBooleanButton>
+
+							<p:inputMask id="ccc" rendered="#{!produtorView.situacao}"
+								value="#{produtorView.produtorBean.cpf}" label="Cpf"
+								style="width: 265px" mask="999.999.999-99" />
+							<p:inputMask id="caa" rendered="#{produtorView.situacao}"
+								value="#{produtorView.produtorBean.cpf}" label="Cnpj"
+								style="width: 265px" mask="99.999.999/9999-99" />
+
+							<p:commandButton value="Salvar"
+								actionListener="#{produtorView.adicionarProdutor()}"
+								ajax="false" id="salv" icon="ui-icon-disk" />
+
+						</h:panelGrid>
+					</p:fieldset>
+
+					<h:panelGrid columns="1" cellpadding="10">
+						<!-- Inicio da tabela -->
+						<p:dataTable id="tbl" var="lst" value="#{produtorView.produtores}"
+							editable="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							sortBy="#{lst.segurado}" style="margin-bottom:20px"
+							emptyMessage="Tabela vazia" resizableColumns="true" reflow="true">
+
+							<p:ajax event="rowEdit" listener="#{produtorView.onEdit}"
+								update=":form:msgs" />
+							<p:ajax event="rowEditCancel" listener="#{produtorView.onCancel}"
+								update=":form:msgs" />
+
+							<f:facet name="header">
+                                Listagem de segurados por produtor
+                                
+                                <p:commandButton id="toggler"
+									type="button" value="Colunas" style="float:right"
+									icon="ui-icon-calculator"  />
+								<p:columnToggler datasource="tbl" trigger="toggler"  />
+							</f:facet>
+							<f:facet name="{Exporters}">
+								<h:commandLink>
+									<p:graphicImage name="images/excel.png" width="26" />
+									<p:dataExporter type="xls" target="tbl" fileName="lanc" />
+								</h:commandLink>
+
+								<h:commandLink>
+									<p:graphicImage name="images/pdf.png" width="26" />
+									<p:dataExporter type="pdf" target="tbl" fileName="lanc" />
+								</h:commandLink>
+							</f:facet>
+
+							<p:column visible="false">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{lst.id}" />
+							</p:column>
+
+							<p:column sortBy="#{lst.produtor}" style="width:180px">
+								<f:facet name="header">
+									<h:outputText value="Produtor" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.produtor}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.produtor}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.segurado}" style="width:180px">
+								<f:facet name="header">
+									<h:outputText value="Segurado" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.segurado}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.segurado}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.cpf}">
+								<f:facet name="header">
+									<h:outputText value="Cpf/Cnpj" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.cpf}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.cpf}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.telefone}">
+								<f:facet name="header">
+									<h:outputText value="Telefone" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.telefone}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.telefone}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.celular}">
+								<f:facet name="header">
+									<h:outputText value="Celular" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.celular}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.celular}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.bairro}">
+								<f:facet name="header">
+									<h:outputText value="Bairro" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.bairro}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.bairro}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.cidade}">
+								<f:facet name="header">
+									<h:outputText value="Cidade" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.cidade}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.cidade}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.endereco}">
+								<f:facet name="header">
+									<h:outputText value="Endereço" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.endereco}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.endereco}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.numero}">
+								<f:facet name="header">
+									<h:outputText value="Número" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.numero}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.numero}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.cep}">
+								<f:facet name="header">
+									<h:outputText value="CEP" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.cep}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.cep}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+
+							<p:column style="width:40px; height: 30px"
+								rendered="#{usuarioView.isAdmin()}" exportable="false">
+								<f:facet name="header">
+									<h:outputText value="Editar" />
+								</f:facet>
+								<p:rowEditor />
+							</p:column>
+
+							<p:column style="width: 5%" rendered="#{usuarioView.isAdmin()}"
+								exportable="false">
+								<f:facet name="header">
+									<h:outputText value="Excluir" />
+								</f:facet>
+								<p:commandLink action="#{produtorView.removerProdutor()}"
+									update="@form">
+									<f:setPropertyActionListener
+										target="#{produtorView.produtorBean}" value="#{lst}" />
+									<p:graphicImage name="images/trash-icon.png" height="20"
+										width="20" />
+									<p:confirm header="Confirmação" message="Confirmar exclusão?"
+										icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+
+						</p:dataTable>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							message="Confirmar exclusão?">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+					</h:panelGrid>
+				</h:form>
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

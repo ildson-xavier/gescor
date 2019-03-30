@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" closable="true" />
+				<p:panel id="basic" header="Incluir Novo Lançamento" footer=" "
+					style="margin-bottom:20px">
+					<h:panelGrid columns="4" style="margin-bottom:10px" cellpadding="5">
+						<p:outputLabel for="hst" value="Segurado:" />
+						<p:autoComplete id="hst" maxResults="5"
+							value="#{lancamentosView.segurado}"
+							completeMethod="#{lancamentosView.autoCompletar}" required="true"
+							label="Histórico" size="40">
+							<p:ajax event="blur" update="prodt"
+								listener="#{lancamentosView.obterProdutor()}" />
+						</p:autoComplete>
+
+						<p:outputLabel for="prodt" value="Produtor:" />
+						<p:autoComplete id="prodt" maxResults="2"
+							value="#{lancamentosView.produtor}"
+							completeMethod="#{lancamentosView.autoCompletarProdutor}"
+							required="true" label="Produtor" size="40" />
+
+						<p:outputLabel for="perio" value="Periodo: " />
+						<p:calendar id="perio"
+							value="#{lancamentosView.lacamentoBean.periodo}" required="true"
+							showOn="button" navigator="true" locale="pt_BR" mask="true"
+							pattern="dd/MM/yyyy" style="width:177px">
+							<p:ajax event="dateSelect" update="per"
+								listener="#{lancamentosView.alterarPercente}" />
+							<p:ajax event="blur" update="per"
+								listener="#{lancamentosView.alterarPercente()}" />
+						</p:calendar>
+
+						<p:outputLabel for="segur" value="Seguradora: " />
+						<p:selectOneMenu id="segur"
+							value="#{lancamentosView.lacamentoBean.seguradora}"
+							required="true" label="Seguradora" style="width: 190px">
+							<f:selectItem itemLabel="Selecione" itemValue="" />
+							<f:selectItems value="#{seguradoraView.listarSeguradoras()}"
+								var="perfil" itemValue="#{perfil.nome}"
+								itemLabel="#{perfil.nome}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel for="parc" value="Parcela:" />
+						<p:spinner id="parc"
+							value="#{lancamentosView.lacamentoBean.parcela}" required="false"
+							min="0" max="30" />
+
+						<p:outputLabel for="sit" value="Situação " />
+						<p:selectOneMenu id="sit"
+							value="#{lancamentosView.lacamentoBean.situacao}"
+							required="false" label="Situacao" style="width: 190px">
+							<f:selectItem itemLabel="Selecione ..." itemValue="" />
+							<f:selectItem itemLabel="Comissão" itemValue="1" />
+							<f:selectItem itemLabel="Ajuste" itemValue="3" />
+							<f:selectItem itemLabel="Campanha" itemValue="4" />
+						</p:selectOneMenu>
+
+						<p:outputLabel for="com" value="Comissão:" />
+						<p:inputText id="com"
+							value="#{lancamentosView.lacamentoBean.comissao}" required="true"
+							label="Comissao" styleClass="js-decimal" style="width: 190px">
+							<f:convertNumber pattern="#,##0.00;-#,##0.00" type="currency"
+								currencySymbol="R$" locale="pt" />
+						</p:inputText>
+
+						<p:outputLabel for="per" value="Percentual: " />
+						<p:inputText id="per" value="#{lancamentosView.percentagem}"
+							disabled="#{!lancamentosView.tribuitar}" label="Percentual"
+							style="width: 190px">
+						</p:inputText>
+
+						<h:outputText for="trib" value="Alterar percentual: " />
+						<p:selectBooleanButton id="trib"
+							value="#{lancamentosView.tribuitar}" onLabel="Sim" offLabel="Não"
+							onIcon="ui-icon-check" offIcon="ui-icon-close" style="width:60px">
+							<p:ajax update="per" listener="#{lancamentosView.tributar}" />
+						</p:selectBooleanButton>
+
+						<h:outputText for="tp" value="Tipo: " />
+						<p:inputSwitch value="#{lancamentosView.tipoPessoa}" offLabel="PJ"
+							onLabel="PF">
+							<p:ajax listener="#{lancamentosView.recalc2014}" update="per" />
+						</p:inputSwitch>
+
+						<h:outputText for="fildata" value="Filtro de Data: " />
+						<p:inputSwitch value="#{lancamentosView.ativarFiltroData}"
+							disabled="#{lancamentosView.lancamentosInclusao.size() > 0}"
+							offLabel="Ativado" onLabel="Desativado">
+							<p:ajax listener="#{lancamentosView.atulizarGrid}" update="@form" />
+						</p:inputSwitch>
+
+					</h:panelGrid>
+					<p:commandButton value="Salvar" ajax="false" id="withIcon"
+						actionListener="#{lancamentosView.adicionarLancamento()}"
+						icon="ui-icon-disk" />
+
+					<p:separator />
+
+					<h:panelGrid columns="1" cellpadding="10" id="panelGrid">
+						<p:dataTable id="tbl" var="lanc"
+							value="#{lancamentosView.lancamentosInclusao}"
+							widgetVar="lancFilter"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} "
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							emptyMessage="Tabela vazia" sortBy="#{lanc.periodo}"
+							style="margin-bottom:20px" resizableColumns="true" lazy="false"
+							reflow="true">
+
+							<f:facet name="header">
+                                        Novo lançamento
+                                    </f:facet>
+
+							<p:column sortBy="#{lanc.historico}">
+								<f:facet name="header">
+									<h:outputText value="Segurado" />
+								</f:facet>
+								<h:outputText value="#{lanc.historico}" />
+							</p:column>
+
+							<p:column sortBy="#{lanc.produtor}">
+								<f:facet name="header">
+									<h:outputText value="Produtor" />
+								</f:facet>
+								<h:outputText value="#{lanc.produtor}" />
+							</p:column>
+
+							<p:column sortBy="#{lanc.periodo}">
+								<f:facet name="header">
+									<h:outputText value="Periodo" />
+								</f:facet>
+								<h:outputText value="#{lanc.periodo}">
+									<f:convertDateTime locale="pt_BR" dateStyle="long"
+										pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{lanc.dataIncluisao}">
+								<f:facet name="header">
+									<h:outputText value="Inclusão" />
+								</f:facet>
+								<h:outputText value="#{lanc.dataIncluisao}">
+									<f:convertDateTime locale="pt_BR" dateStyle="long"
+										pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{lanc.seguradora}">
+								<f:facet name="header">
+									<h:outputText value="Seguradora" />
+								</f:facet>
+								<h:outputText value="#{lanc.seguradora}" />
+							</p:column>
+
+							<p:column sortBy="#{lanc.tipoPessoa}">
+								<f:facet name="header">
+									<h:outputText value="Tipo" />
+								</f:facet>
+								<h:outputText value="#{lanc.tipoPessoa}" />
+							</p:column>
+
+							<p:column sortBy="#{lanc.comissao}">
+								<f:facet name="header">
+									<h:outputText value="Comissão" />
+								</f:facet>
+								<h:outputText value="#{lanc.comissao}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{lanc.valor2}">
+								<f:facet name="header">
+									<h:outputText value="Imposto" />
+								</f:facet>
+								<h:outputText value="#{lanc.valor2}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{lanc.valor3}">
+								<f:facet name="header">
+									<h:outputText value="Prêmio Líquido" />
+								</f:facet>
+								<h:outputText value="#{lanc.valor3}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+							</p:column>
+
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="6" style="text-align:right"
+										footerText="Totais" />
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText value="#{lancamentosView.totalInclusao[0]}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+									<p:column>
+										<f:facet name="footer">
+											<h:outputText value="#{lancamentosView.totalInclusao[1]}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+									<p:column>
+										<f:facet name="footer">
+											<h:outputText value="#{lancamentosView.totalInclusao[2]}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+								</p:row>
+							</p:columnGroup>
+
+						</p:dataTable>
+						<!-- Fim da tabela -->
+					</h:panelGrid>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

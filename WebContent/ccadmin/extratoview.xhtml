@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+			<h:outputScript library="js" name="ccomissao.js" />
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<p:panel header="Apuração Financeira" id="apuracao">
+				<h:form id="form">
+					<p:messages id="msgs" showDetail="true" closable="true" />
+					<!-- <p:growl id="msgs" showDetail="true"/>-->
+
+					<p:fieldset legend="Filtro" toggleable="true" collapsed="false"
+						toggleSpeed="500">
+
+						<p:panelGrid id="panel" columns="3" layout="grid">
+
+							<h:panelGrid columns="2">
+								<p:outputLabel for="dtFinal" value="Período:" />
+								<p:calendar id="dtFinal" value="#{extratoView.dataPesquisa}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="prod" value="Produtor:" />
+								<p:inputText id="prod" value="#{extratoView.produtorPesquisa}" />
+							</h:panelGrid>
+
+						</p:panelGrid>
+						<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+							actionListener="#{extratoView.pesquisarExtratos()}"
+							update="@form:tbl" icon="ui-icon-disk" />
+
+						<p:commandButton value="Incluir extrato" ajax="true" id="incluir"
+							oncomplete="PF('dlgIncluirExtrato').show();" process="@this"
+							update="@form:dialogIncluirExtrato" icon="ui-icon-disk" />
+
+					</p:fieldset>
+
+					<h:panelGrid columns="1" cellpadding="10">
+						<!-- Inicio da tabela -->
+						<p:dataTable id="tbl" var="extr" value="#{extratoView.extratos}"
+							editable="true" emptyMessage="Tabela de notas vazia"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							selectionMode="single" rowKey="#{extr.periodo}"
+							sortBy="#{extr.periodo}" style="margin-bottom:20px">
+
+							<p:ajax event="rowEditCancel" listener="#{extratoView.onCancel}"
+								update=":form:msgs" />
+
+							<f:facet name="header">
+                                Listagem de extratos
+                            </f:facet>
+
+							<p:column sortBy="#{extr.periodo}" groupRow="true">
+								<f:facet name="header">
+									<h:outputText value="Período" />
+								</f:facet>
+								<h:outputText value="#{extr.periodo}" />
+							</p:column>
+
+							<p:column sortBy="#{extr.vlrTotalSeguradorasExtrato}"
+								groupRow="true">
+								<f:facet name="header">
+									<h:outputText value="Seguradoras Extrato" />
+								</f:facet>
+								<p:commandLink oncomplete="PF('dlgSeguradaExtrato').show();"
+									process="@this" update="@form:dialogSeguradoraExtrato"
+									actionListener="#{extratoView.exibirSeguradoraExtrato(extr)}"
+									style="color: blue !important;">
+									<h:outputText value="#{extr.vlrTotalSeguradorasExtrato}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt" />
+									</h:outputText>
+									<p:graphicImage name="images/seta.png" height="15" width="15"
+										style="padding-left: 5px" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column sortBy="#{extr.vlrTotalSeguradorasSistema}"
+								groupRow="true">
+								<f:facet name="header">
+									<h:outputText value="Seguradoras Sistema" />
+								</f:facet>
+								<p:commandLink oncomplete="PF('dlgSeguradaSistema').show();"
+									process="@this" update="@form:dialogSeguradoraSistema"
+									actionListener="#{extratoView.exibirSeguradoraSistema(extr)}"
+									style="color: blue !important;">
+								<h:outputText value="#{extr.vlrTotalSeguradorasSistema}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+								<p:graphicImage name="images/seta.png" height="15" width="15"
+										style="padding-left: 5px" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column sortBy="#{extr.produtor}">
+								<f:facet name="header">
+									<h:outputText value="Produtor" />
+								</f:facet>
+								<h:outputText value="#{extr.produtor}" />
+							</p:column>
+
+							<p:column sortBy="#{extr.vlrRetiradaSocio}">
+								<f:facet name="header">
+									<h:outputText value="Retirada Sócio" />
+								</f:facet>
+								<h:outputText value="#{extr.vlrRetiradaSocio}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{extr.vlrReceberSistema}">
+								<f:facet name="header">
+									<h:outputText value="Sistema/Receber" />
+								</f:facet>
+								<h:outputText value="#{extr.vlrReceberSistema}"
+									rendered="#{extr.vlrReceberSistema.intValue() ge 0}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+								<h:outputText value="#{extr.vlrReceberSistema}"
+									style="color: red !important"
+									rendered="#{extr.vlrReceberSistema.intValue() le -0.01}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{extr.vlrAcerto}">
+								<f:facet name="header">
+									<h:outputText value="Saldo" />
+								</f:facet>
+								<h:outputText value="#{extr.vlrAcerto}"
+									rendered="#{extr.vlrAcerto.intValue() ge 0}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+								<h:outputText value="#{extr.vlrAcerto}"
+									style="color: red !important"
+									rendered="#{extr.vlrAcerto.intValue() le -0.01}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+
+							</p:column>
+
+							<p:column sortBy="#{extr.vlrSaldoAcumulado}">
+								<f:facet name="header">
+									<h:outputText value="Saldo Acumulado" />
+								</f:facet>
+								<h:outputText value="#{extr.vlrSaldoAcumulado}"
+									rendered="#{extr.vlrSaldoAcumulado.intValue() ge 0}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+								<h:outputText value="#{extr.vlrSaldoAcumulado}"
+									style="color: red !important"
+									rendered="#{extr.vlrSaldoAcumulado.intValue() le -0.01}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{extr.id}" visible="false">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{extr.id}" />
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Editar" />
+								</f:facet>
+								<p:commandLink oncomplete="PF('dlgIncluir').show();"
+									process="@this" update="@form:dialogIncluir">
+									<p:graphicImage name="images/editar.png" height="20" width="20" />
+									<f:setPropertyActionListener target="#{extratoView.extrato}"
+										value="#{extr}" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Atualizar" />
+								</f:facet>
+								<p:commandLink ajax="true"
+									actionListener="#{extratoView.atualizarPeriodo(extr)}"
+									process="@this" update="@form:tbl, @form:msgs">
+									<p:graphicImage name="images/atualizar.png" height="18"
+										width="20" />
+									<p:confirm header="Confirmação"
+										message="Confirmar atualização?" icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Deletar" />
+								</f:facet>
+								<p:commandLink
+									actionListener="#{extratoView.deletarExtrato(extr)}"
+									process="@this" update="@form:tbl, @form:msgs">
+									<p:graphicImage name="images/trash-icon.png" height="20"
+										width="20" />
+									<p:confirm header="Confirmação" message="Confirmar exclusão?"
+										icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="1" style="text-align:right"
+										footerText="Totais" />
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText
+												value="#{extratoView.extratoTotais.vlrTotalSeguradorasExtrato}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText
+												value="#{extratoView.extratoTotais.vlrTotalSeguradorasSistema}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText value="#{extratoView.extratoTotais.id}" />
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText
+												value="#{extratoView.extratoTotais.vlrRetiradaSocio}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText
+												value="#{extratoView.extratoTotais.vlrReceberSistema}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText value="#{extratoView.extratoTotais.vlrAcerto}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText
+												value="#{extratoView.extratoTotais.vlrSaldoAcumulado}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column footerText=" " />
+									<p:column footerText=" " />
+									<p:column footerText=" " />
+
+								</p:row>
+							</p:columnGroup>
+						</p:dataTable>
+
+					</h:panelGrid>
+
+
+					<p:dialog id="dialogSeguradoraExtrato" header="Seguradoras Extrato"
+						modal="true" width="25%" widgetVar="dlgSeguradaExtrato"
+						minimizable="true" maximizable="true" responsive="true"
+						resizable="true">
+						<p:panel id="panelSE">
+							<p:dataTable value="#{extratoView.seguradoras}" var="seg">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Período" />
+									</f:facet>
+									<h:outputText value="#{seg.periodo}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Seguradora" />
+									</f:facet>
+									<h:outputText value="#{seg.seguradora}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Valor" />
+									</f:facet>
+									<h:outputText value="#{seg.valor}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</p:dialog>
+					
+					
+					<p:dialog id="dialogSeguradoraSistema" header="Seguradoras Sistema"
+						modal="true" width="25%" widgetVar="dlgSeguradaSistema"
+						minimizable="true" maximizable="true" responsive="true"
+						resizable="true">
+						<p:panel id="panelS">
+							<p:dataTable value="#{extratoView.seguradoras}" var="seg">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Período" />
+									</f:facet>
+									<h:outputText value="#{seg.periodo}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Seguradora" />
+									</f:facet>
+									<h:outputText value="#{seg.seguradora}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Valor" />
+									</f:facet>
+									<h:outputText value="#{seg.valor}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt" />
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</p:dialog>
+
+
+
+					<p:dialog id="dialogIncluirExtrato" header="Incluir extrato"
+						modal="true" width="25%" widgetVar="dlgIncluirExtrato"
+						minimizable="true" maximizable="true" responsive="true"
+						resizable="true">
+
+						<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+						<h:outputScript library="js" name="ccomissao.js" />
+
+						<p:panel id="basic2" style="margin-bottom:20px">
+
+							<h:panelGrid columns="1">
+								<p:calendar id="periodo2" value="#{extratoView.periodo}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="tipo" value="Seguradora:" />
+								<p:selectOneMenu id="tipo"
+									value="#{extratoView.seguradorasExtrato}" required="false"
+									label="Seguradora" style="width: 190px">
+									<f:selectItem itemLabel="Selecione" itemValue="" />
+									<f:selectItems value="#{seguradoraView.listarSeguradoras()}"
+										var="perfil" itemValue="#{perfil.nome}"
+										itemLabel="#{perfil.nome}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="vlr-dialog2" value="Total Extrato" />
+								<p:inputText id="vlr-dialog2" required="true" label="Comissao"
+									styleClass="js-decimal" style="width: 190px"
+									value="#{extratoView.vlrSeguradoraExtrato}">
+									<f:convertNumber pattern="#,##0.00;(#,##0.00)" type="currency"
+										currencySymbol="R$" locale="pt" />
+								</p:inputText>
+							</h:panelGrid>
+
+							<p:commandButton value="Incluir" ajax="true" id="inc2"
+								actionListener="#{extratoView.criarExtrato}" icon="ui-icon-disk"
+								update="@form" oncomplete="PF('dlgIncluirExtrato').hide();" />
+
+						</p:panel>
+
+						<script>
+							$(function() {
+								var decimal = $('.js-decimal');
+								decimal.maskMoney({
+									decimal : ",",
+									thousands : ".",
+									allowZero : true,
+									allowNegative : true
+								});
+							});
+						</script>
+					</p:dialog>
+
+
+					<p:dialog id="dialogIncluir" header="Atualizar Retirada Sócio"
+						modal="true" width="25%" widgetVar="dlgIncluir" minimizable="true"
+						maximizable="true" responsive="true" resizable="true">
+
+						<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+						<h:outputScript library="js" name="ccomissao.js" />
+
+						<p:panel id="basic" style="margin-bottom:20px">
+
+							<h:panelGrid columns="1">
+								<p:outputLabel for="periodo" value="Periódo:" />
+								<p:inputText id="periodo" value="#{extratoView.extrato.periodo}"
+									style="width:177px" disabled="true" />
+
+								<p:outputLabel for="produtor" value="Produtor:" />
+								<p:inputText id="produtor"
+									value="#{extratoView.extrato.produtor}" style="width:177px"
+									disabled="true" />
+
+
+								<p:outputLabel for="vlr-dialog" value="Retirada Sócio" />
+								<p:inputText id="vlr-dialog" required="true" label="Comissao"
+									styleClass="js-decimal" style="width: 190px"
+									value="#{extratoView.extrato.vlrRetiradaSocio}">
+									<f:convertNumber pattern="#,##0.00;(#,##0.00)" type="currency"
+										currencySymbol="R$" locale="pt" />
+								</p:inputText>
+							</h:panelGrid>
+
+							<p:commandButton value="Salvar" ajax="true" id="inc"
+								actionListener="#{extratoView.atualizarExtrato()}"
+								icon="ui-icon-disk" update="@form"
+								oncomplete="PF('dlgIncluir').hide();" />
+
+						</p:panel>
+
+						<script>
+							$(function() {
+								var decimal = $('.js-decimal');
+								decimal.maskMoney({
+									decimal : ",",
+									thousands : ".",
+									allowZero : true,
+									allowNegative : true
+								});
+							});
+						</script>
+					</p:dialog>
+
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+						message="Confirmar exclusão?">
+						<p:commandButton value="Sim" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="Não" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+				</h:form>
+			</p:panel>
+			<script>
+				function somenteNumeros(num) {
+					configurarMoeda();
+				}
+				function configurarMoeda() {
+					$(".js-decimal").maskMoney({
+						decimal : ",",
+						thousands : ".",
+						allowZero : true,
+						allowNegative : true
+					});
+				}
+
+				$(document).ready(function() {
+					configurarMoeda();
+				});
+			</script>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

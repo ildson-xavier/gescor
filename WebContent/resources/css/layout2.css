@@ -1,0 +1,91 @@
+/* TOPBAR */
+.mp-topbar {
+	background-color: #1e94d2;
+	min-height: 50px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 999;
+}
+
+.mp-topbar > img {
+	margin-left: 5px;
+}
+
+.mp-topbar > p {
+	color: #fff;
+	font-weight: 500;
+	font-size: 18px;
+	margin-left: 5px;
+	width: 200px;
+	display: block;
+	float: left;
+}
+
+/* TOGGLE */
+.mp-toggle {
+	float: right;
+	line-height: 50px;
+	margin-right: 10px;
+	
+	color: #fff !important;
+	font-size: 28px;
+}
+
+/* SIDEBAR */
+.mp-sidebar {
+	position: fixed;
+	width: 230px;
+	bottom: 0;
+	top: 50px;
+	left: 0;
+	z-index: 998;
+	overflow-y: auto;
+/*     border-right: 1px solid #eaeaea; */
+/* 	background-color: #f6f6f6; */
+	
+}
+
+/*CONTEUDO*/
+.mp-content {
+	margin-top: 60px;
+	margin-left: 220px;
+}
+
+/*MENU*/
+.mp-menu {
+	margin-top: 10px;
+}
+
+.mp-menu > ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.mp-menu > ul a {
+	display: block;
+	padding: 10px 15px;
+	
+	text-decoration: none;
+	font-weight: 500;
+	color: #373737;
+}
+
+.mp-menu ul i {
+	margin-right: 6px;
+}
+
+.mp-menu > ul a:hover, .mp-menu > ul a:focus{
+	@background-color: #dfdfdf;
+	@border-left: 3px solid #1e94d2;
+}
+
+.mp-menu-titulo {
+	display: block;
+	background-color: #dfdfdf;
+	padding: 10px 15px;
+	border-left: 3px solid #1e94d2;
+	
+}

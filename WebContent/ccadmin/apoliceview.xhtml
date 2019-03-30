@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" closable="true" />
+				<!-- <p:growl id="msgs" showDetail="true"/>-->
+
+				<p:panel header="Consulta de Apolice">
+
+					<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+						<!-- Inicio do filtro -->
+						<h:panelGrid columns="6" style="margin-bottom:10px"
+							cellpadding="3">
+
+							<p:outputLabel for="segu" value="Segurado: " />
+							<p:inputText id="segu"
+								value="#{pesquisaApoliceView.filtro.segurado}" label="Segurado"
+								style="width: 265px">
+							</p:inputText>
+
+							<p:outputLabel for="produ" value="Produtor: " />
+							<p:inputText id="produ"
+								value="#{pesquisaApoliceView.filtro.corretor}" label="Produtor"
+								style="width: 265px" />
+
+							<p:outputLabel for="apo" value="Apolice " />
+							<p:inputText id="apo"
+								value="#{pesquisaApoliceView.filtro.numeroApolice}"
+								label="Produtor" style="width: 265px" />
+
+							<p:outputLabel for="sus" value="Susep " />
+							<p:inputText id="sus" value="#{pesquisaApoliceView.filtro.susep}"
+								label="Produtor" style="width: 265px" />
+
+
+
+							<p:outputLabel for="mamo" value="Marca/Modelo " />
+							<p:inputText id="mamo"
+								value="#{pesquisaApoliceView.filtro.marcaMoldelo}"
+								label="Produtor" style="width: 265px" />
+
+							<p:outputLabel for="plc" value="Placa " />
+							<p:inputText id="plc" value="#{pesquisaApoliceView.filtro.placa}"
+								label="Produtor" style="width: 265px" />
+
+							<p:outputLabel />
+							<h:panelGrid columns="1" style="margin-bottom: 10px">
+								<p:outputLabel for="qtddias"
+									value="Apólices que terminam a partir de: " />
+								<p:inputText id="qtddias"
+									value="#{pesquisaApoliceView.filtro.qtdDias}" />
+								<p:slider for="qtddias" />
+							</h:panelGrid>
+						</h:panelGrid>
+
+
+						<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+							actionListener="#{pesquisaApoliceView.pesquisarFiltro()}"
+							update="@form" icon="ui-icon-disk" />
+						<!-- Fim do filtro -->
+					</p:fieldset>
+					<p:separator />
+
+					<h:panelGrid columns="1" cellpadding="10">
+						<!-- Inicio da tabela -->
+						<p:dataTable id="tbl" var="lst"
+							value="#{pesquisaApoliceView.apolices}" editable="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							sortBy="#{lst.dataTermino}" style="margin-bottom:20px"
+							selectionMode="single" rowKey="#{lst.id}"
+							emptyMessage="Tabela vazia" resizableColumns="true" lazy="false"
+							reflow="true">
+
+							<p:ajax event="rowEdit" listener="#{produtorView.onEdit}"
+								update=":form:msgs" />
+							<p:ajax event="rowEditCancel" listener="#{produtorView.onCancel}"
+								update=":form:msgs" />
+
+							<f:facet name="header">
+                                Listagem de apolice
+                            </f:facet>
+							<f:facet name="{Exporters}">
+								<h:commandLink>
+									<p:graphicImage name="images/excel.png" width="26" />
+									<p:dataExporter type="xls" target="tbl" fileName="lanc" />
+								</h:commandLink>
+
+								<h:commandLink>
+									<p:graphicImage name="images/pdf.png" width="26" />
+									<p:dataExporter type="pdf" target="tbl" fileName="lanc" />
+								</h:commandLink>
+							</f:facet>
+
+							<p:column sortBy="#{lst.id}" style="width: 30px;" visible="false">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{lst.id}" />
+							</p:column>
+
+							<p:column sortBy="#{lst.seguradora}" style="width:90px;">
+								<f:facet name="header">
+									<h:outputText value="Seguradora" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.seguradora}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.seguradora}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.numeroApolice}" style="width:90px;">
+								<f:facet name="header">
+									<h:outputText value="Apolice" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.numeroApolice}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.numeroApolice}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.dataVigenciaInicio}" style="width:90px;">
+								<f:facet name="header">
+									<h:outputText value="Inicio Vigencia" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.dataVigenciaInicio}">
+											<f:convertDateTime locale="pt_BR" dateStyle="long"
+												pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:calendar id="viin" locale="pt_BR" showOn="button"
+											navigator="true" mask="true" pattern="dd/MM/yyyy"
+											value="#{lst.dataVigenciaInicio}" style="width:177px" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.dataTermino}" style="width:90px;">
+								<f:facet name="header">
+									<h:outputText value="Fim Vigencia" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.dataTermino}">
+											<f:convertDateTime locale="pt_BR" dateStyle="long"
+												pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:calendar id="vite" locale="pt_BR" showOn="button"
+											navigator="true" mask="true" pattern="dd/MM/yyyy"
+											value="#{lst.dataTermino}" style="width:177px" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.segurado.segurado}" style="width:170px;">
+								<f:facet name="header">
+									<h:outputText value="Segurado" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.segurado.segurado}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.segurado.segurado}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.segurado.produtor}" style="width:170px;">
+								<f:facet name="header">
+									<h:outputText value="Produtor" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.segurado.produtor}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.segurado.produtor}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.veiculo.marcaModelo}"
+								style="width:170px;">
+								<f:facet name="header">
+									<h:outputText value="Veiculo" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.veiculo.marcaModelo}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.veiculo.marcaModelo}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column style="width:70px;" exportable="false">
+								<f:facet name="header">
+									<h:outputText value="Baixar" />
+								</f:facet>
+								<p:commandButton value="Baixar" ajax="false" update=":form"
+									onclick="PrimeFaces.monitorDownload(start, stop);"
+									icon="ui-icon-arrowthick-1-s" disabled="#{lst.temArquivo()}">
+									<p:fileDownload value="#{lst.download()}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column style="width:50px;" exportable="false">
+								<f:facet name="header">
+									<h:outputText value="Detalhe" />
+								</f:facet>
+								<p:commandButton update=":form:detalhe"
+									oncomplete="PF('detalheDialog').show()" icon="ui-icon-search"
+									title="View">
+									<f:setPropertyActionListener value="#{lst}"
+										target="#{pesquisaApoliceView.apoliceSelecionada}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column
+								rendered="#{usuarioLoginBean.autorizador('APOLICE_EXCLUIR')}"
+								exportable="false" style="width:50px;">
+								<f:facet name="header">
+									<h:outputText value="Excluir" />
+								</f:facet>
+								<p:commandLink action="#{pesquisaApoliceView.removerApolice()}"
+									update="@form">
+									<f:setPropertyActionListener
+										target="#{pesquisaApoliceView.apoliceSelecionada}"
+										value="#{lst}" />
+									<p:graphicImage name="images/trash-icon.png" height="20"
+										width="20" />
+									<p:confirm header="Confirmação" message="Confirmar exclusão?"
+										icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+
+						</p:dataTable>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							message="Confirmar exclusão?">
+							<p:commandButton value="Sim" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Não" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<p:dialog header="Detalhe" widgetVar="detalheDialog" modal="true"
+							showEffect="fade" hideEffect="fade" resizable="false">
+							<p:outputPanel id="detalhe">
+								<div class="ui-fluid">
+									<p:tabView activeIndex="#{pesquisaApoliceView.index}"
+										dynamic="true">
+										<p:tab title="Apolice">
+											<p:panelGrid columns="2" columnClasses="label,value"
+												rendered="#{not empty pesquisaApoliceView.apoliceSelecionada}">
+
+												<h:outputText value="Id:" />
+												<p:inputText disabled="true"
+													value="#{pesquisaApoliceView.apoliceSelecionada.id}" />
+
+												<h:outputText value="Seguradora:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.seguradora}" />
+
+												<h:outputText value="Apolice:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.numeroApolice}" />
+
+												<h:outputText value="Susep:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.susep}" />
+
+												<h:outputText value="Arquivo:" />
+												<p:inputText disabled="true"
+													value="#{pesquisaApoliceView.apoliceSelecionada.arquivo}" />
+
+												<h:outputText value="Início Vigência" />
+												<p:calendar id="inicio" locale="pt_BR" navigator="true"
+													mask="true" pattern="dd/MM/yyyy"
+													value="#{pesquisaApoliceView.apoliceSelecionada.dataVigenciaInicio}"
+													disabled="#{pesquisaApoliceView.desabilitado}" />
+
+												<h:outputText value="Fim Vigência" />
+												<p:calendar id="fim" locale="pt_BR" navigator="true"
+													mask="true" pattern="dd/MM/yyyy"
+													value="#{pesquisaApoliceView.apoliceSelecionada.dataTermino}"
+													disabled="#{pesquisaApoliceView.desabilitado}" />
+
+											</p:panelGrid>
+										</p:tab>
+										<p:tab title="Segurado">
+											<p:panelGrid columns="2" id="seg22"
+												columnClasses="label,value"
+												rendered="#{not empty pesquisaApoliceView.apoliceSelecionada}">
+
+												<h:outputText value="Nome:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													style="width:250px"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.segurado}" />
+
+												<p:selectBooleanButton id="nmcpf"
+													value="#{pesquisaApoliceView.situacao}" onLabel="Cnpj:"
+													offLabel="Cpf:" style="width:60px">
+													<p:ajax update=":form:detalhe, c, ca" />
+												</p:selectBooleanButton>
+
+												<p:inputMask id="c"
+													rendered="#{!pesquisaApoliceView.situacao}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.cpf}"
+													label="Cpf" style="width: 265px"
+													disabled="#{pesquisaApoliceView.desabilitado}"
+													mask="999.999.999-99" />
+												<p:inputMask id="ca"
+													rendered="#{pesquisaApoliceView.situacao}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.cpf}"
+													label="Cnpj" style="width: 265px"
+													disabled="#{pesquisaApoliceView.desabilitado}"
+													mask="99.999.999/9999-99" />
+
+												<h:outputText value="Telefone:" />
+												<p:inputMask disabled="#{pesquisaApoliceView.desabilitado}"
+													mask="(99) 9999-9999" size="10"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.telefone}" />
+
+												<h:outputText value="Celular:" />
+												<p:inputMask disabled="#{pesquisaApoliceView.desabilitado}"
+													mask="(99) 99999-9999" size="10"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.celular}" />
+
+												<h:outputText value="Bairro:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.bairro}" />
+
+												<h:outputText value="Cidade:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.cidade}" />
+
+												<h:outputText value="UF:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.uf}" />
+
+												<h:outputText value="Endereço:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.endereco}" />
+
+												<h:outputText value="CEP:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.cep}" />
+
+												<h:outputText value="Corretor:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.segurado.corretor}" />
+
+											</p:panelGrid>
+										</p:tab>
+										<p:tab title="Veículo">
+											<p:panelGrid columns="2" columnClasses="label,value"
+												rendered="#{not empty pesquisaApoliceView.apoliceSelecionada}">
+
+												<h:outputText value="Marca/Modelo:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.veiculo.marcaModelo}"
+													style="width:250px" />
+
+												<h:outputText value="Ano Fabr./Ano Modelo:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.veiculo.anoFabricacaoAnoModelo}" />
+
+												<h:outputText value="Placa:" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.veiculo.placa}" />
+
+												<h:outputText value="Zero KM" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.veiculo.zeroKm}" />
+
+												<h:outputText value="Chassi" />
+												<p:inputText disabled="#{pesquisaApoliceView.desabilitado}"
+													value="#{pesquisaApoliceView.apoliceSelecionada.veiculo.chassi}" />
+
+											</p:panelGrid>
+										</p:tab>
+									</p:tabView>
+									<p:commandButton value="Editar" ajax="true"
+										actionListener="#{pesquisaApoliceView.habilitar()}"
+										update=":form:detalhe" icon="ui-icon-disk"
+										disabled="#{!pesquisaApoliceView.desabilitado}" />
+									<p:commandButton value="Atualizar" ajax="true"
+										actionListener="#{pesquisaApoliceView.atualizarApolice()}"
+										update="form" icon="ui-icon-disk"
+										disabled="#{pesquisaApoliceView.desabilitado}" />
+								</div>
+
+							</p:outputPanel>
+						</p:dialog>
+
+					</h:panelGrid>
+				</p:panel>
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+	<script type="text/javascript">
+		function start() {
+			PF('statusDialog').show();
+		}
+
+		function stop() {
+			PF('statusDialog').hide();
+		}
+	</script>
+
+	<!-- 						<p:outputLabel for="inivi" value="Inicio Vigencia " />							 -->
+	<!-- 						<p:calendar id="inivi" value="#{pesquisaApoliceView.filtro.inicioVigencia}" -->
+	<!-- 										showOn="button" navigator="true" locale="pt_BR" mask="true" -->
+	<!-- 										pattern="dd/MM/yyyy" style="width:265px" /> -->
+
+	<!-- 						<p:outputLabel for="fivi" value="Fim Vigência " />							 -->
+	<!-- 						<p:calendar id="fivi" value="#{pesquisaApoliceView.filtro.fimVigencia}" -->
+	<!-- 										showOn="button" navigator="true" locale="pt_BR" mask="true" -->
+	<!-- 										pattern="dd/MM/yyyy" style="width:265px" /> -->
+</h:body>
+</html>

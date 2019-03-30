@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+
+</h:head>
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" showSummary="true" />
+				<!-- <p:growl id="msgs" showDetail="true"/>-->
+				<p:tabView>
+					<p:tab id="COMPONENTE_GRAFICO_POR_DATA" 
+					rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_POR_DATA')}"
+					title="Resumo por Data">
+						<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+							<!-- Inicio do filtro -->
+							<p:panelGrid id="gridd" columns="8" layout="grid">
+
+								<p:outputLabel for="an" value="Ano " />
+								<p:selectOneMenu id="an" value="#{grafico.ano}" required="true"
+									label="Ano" style="width: 190px">
+									<f:selectItem itemLabel="Selecione ..." itemValue="" />
+									<f:selectItem itemLabel="2012" itemValue="2012" />
+									<f:selectItem itemLabel="2013" itemValue="2013" />
+									<f:selectItem itemLabel="2014" itemValue="2014" />
+									<f:selectItem itemLabel="2015" itemValue="2015" />
+									<f:selectItem itemLabel="2016" itemValue="2016" />
+									<f:selectItem itemLabel="2017" itemValue="2017" />
+									<f:selectItem itemLabel="2018" itemValue="2018" />
+									<f:selectItem itemLabel="2019" itemValue="2019" />
+									<f:selectItem itemLabel="2020" itemValue="2020" />
+								</p:selectOneMenu>
+
+								<p:commandButton value="Pesquisar" ajax="true" id="graf-ano"
+									actionListener="#{grafico.getFiltroGraficoData()}"
+									update="form" icon="ui-icon-disk" />
+							</p:panelGrid>
+							<!-- Fim do filtro -->
+
+						</p:fieldset>
+						<p:chart id="grafi" type="bar" responsive="true"
+							rendered="#{grafico.lancamentosGraficoData.size() > 0}"
+							model="#{grafico.getBarModelCategoriaData()}"
+							style="height: 400px" />
+
+						<!-- <p:chart type="bar"
+							rendered="#{grafico.lancamentosGraficoData.size() > 0}"
+							model="#{grafico.barModel}" style="height:400px"
+							responsive="true" /> -->
+					</p:tab>
+					<p:tab id="COMPONENTE_GRAFICO_POR_CATEGORIA" 
+					rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_POR_CATEGORIA')}"
+					title="Resumo por Categorias">
+						<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+
+							<p:panelGrid id="grid" columns="7">
+
+								<p:outputLabel for="dtInicial" value="Data Inicial:" />
+								<p:calendar id="dtInicial" value="#{grafico.dataInicialCat}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="dd/MM/yyyy" style="width:177px;" />
+
+								<p:outputLabel for="dtFinal" value="Data Final" />
+								<p:calendar id="dtFinal" value="#{grafico.dataFinalCat}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="dd/MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="cat" value="Categoria" />
+								<p:inputText id="cat" value="#{grafico.tipoCategoria}"
+									label="Categoria" style="width: 190px" />
+
+								<p:commandButton value="Pesquisar" ajax="false"
+									action="#{grafico.getFiltroGraficoCategoria()}"
+									icon="ui-icon-disk" />
+							</p:panelGrid>
+
+						</p:fieldset>
+
+						<p:chart id="categoria" type="bar" responsive="true"
+							rendered="#{grafico.lancamentosGrafico.size() > 0}"
+							model="#{grafico.getBarModelCategoria()}" style="height:400px"/>
+
+						<p:separator />
+						<h:form id="detalhe">
+							<p:dataTable var="lst" value="#{grafico.lancamentosGrafico}"
+								rendered="#{grafico.lancamentosGrafico.size() > 10000}"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								paginator="true" rows="6" rowsPerPageTemplate="6,11,16"
+								sortBy="#{lst.mesAno}" reflow="true">
+								<f:facet name="header">
+        						Detalhe
+    						</f:facet>
+
+								<p:column sortBy="#{lst.tipo}" headerText="Categoria">
+									<h:outputText value="#{lst.tipo}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.mesAno}" headerText="Mês/Ano">
+									<h:outputText value="#{lst.mesAno}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.contador}"
+									headerText="Quantidade de lançamentos">
+									<h:outputText value="#{lst.contador}" />
+								</p:column>
+
+								<p:column headerText="Valor das despesas">
+									<h:outputText value="#{lst.comissao}">
+										<f:convertNumber type="currency" currencySymbol="R$" />
+									</h:outputText>
+								</p:column>
+
+								<p:columnGroup type="footer">
+									<p:row>
+										<p:column footerText=" " />
+										<p:column footerText="Totais:" />
+										<p:column footerText="#{grafico.quantidade}" />
+										<p:column footerText="R$ #{grafico.valorTotal}" />
+									</p:row>
+								</p:columnGroup>
+
+							</p:dataTable>
+						</h:form>
+					</p:tab>
+
+					<p:tab id="COMPONENTE_GRAFICO_POR_SUB-CATEGORIA" 
+					rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_POR_SUB-CATEGORIA')}"
+					title="Resumo por Sub-Categorias">
+						<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+
+							<p:panelGrid id="grid2" columns="7">
+
+								<p:outputLabel for="dtInicials" value="Data Inicial:" />
+								<p:calendar id="dtInicials" value="#{grafico.dataInicial}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="dd/MM/yyyy" style="width:177px;" />
+
+								<p:outputLabel for="dtFinals" value="Data Final" />
+								<p:calendar id="dtFinals" value="#{grafico.dataFinal}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="dd/MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="sub" value="Sub-Categoria" />
+								<p:inputText id="sub" value="#{grafico.subTipoCategoria}"
+									label="Sub-Categoria" style="width: 190px" />
+
+								<p:commandButton value="Pesquisar" ajax="false"
+									action="#{grafico.getFiltroGraficoCategoriaSub()}"
+									icon="ui-icon-disk" />
+							</p:panelGrid>
+
+
+						</p:fieldset>
+
+						<p:separator />
+						<h:form id="detalhe2">
+							<p:dataTable var="lst" value="#{grafico.lancamentosGraficoSub}"
+								rendered="#{grafico.lancamentosGraficoSub.size() > 10000}"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								paginator="true" rows="6" rowsPerPageTemplate="6,11,16"
+								sortBy="#{lst.mesAno}" reflow="true">
+								<f:facet name="header">
+        						Detalhe
+    						</f:facet>
+
+								<p:column sortBy="#{lst.tipo}" headerText="Sub-Categoria">
+									<h:outputText value="#{lst.tipo}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.mesAno}" headerText="Mês/Ano">
+									<h:outputText value="#{lst.mesAno}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.contador}"
+									headerText="Quantidade de lançamentos">
+									<h:outputText value="#{lst.contador}" />
+								</p:column>
+
+								<p:column headerText="Valor das despesas">
+									<h:outputText value="#{lst.comissao}">
+										<f:convertNumber type="currency" currencySymbol="R$" />
+									</h:outputText>
+								</p:column>
+
+								<p:columnGroup type="footer">
+									<p:row>
+										<p:column footerText=" " />
+										<p:column footerText="Totais:" />
+										<p:column footerText="#{grafico.quantidade}" />
+										<p:column footerText="R$ #{grafico.valorTotal}" />
+									</p:row>
+								</p:columnGroup>
+
+							</p:dataTable>
+						</h:form>
+						<p:chart id="sub-categoria" type="bar" responsive="true"
+							rendered="#{grafico.lancamentosGraficoSub.size() > 0}"
+							model="#{grafico.getBarModelFaturamentoSubTipo()}"
+							style="height:600px" />
+					</p:tab>
+
+				</p:tabView>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+<!-- <p:selectOneMenu id="fatProd" value="#{graficoView.ano}" style="width:150px">
+                  <p:ajax listener="#{graficoView.onAnoSelecionado()}" update="produtores" />
+                  <f:selectItem itemLabel="Selecione o ano" itemValue="" noSelectionOption="true" />
+                  <f:selectItems value="#{graficoView.anos}" />
+     </p:selectOneMenu> -->
+</html>

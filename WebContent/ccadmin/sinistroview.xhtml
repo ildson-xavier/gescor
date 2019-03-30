@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<!-- 			<p:ajaxStatus onstart="PF('statusDialog').show()" -->
+			<!-- 				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus> -->
+			<!-- 			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..." -->
+			<!-- 				draggable="false" closable="false"> -->
+			<!-- 				<p:graphicImage name="images/load.gif" width="100" /> -->
+			<!-- 			</p:dialog> -->
+			<p:panel>
+				<h:form id="form">
+					<p:messages id="msgs" showDetail="true" closable="true" />
+					<!-- <p:growl id="msgs" showDetail="true"/>-->
+
+					<p:fieldset legend="Filtro" toggleable="true" collapsed="false"
+						toggleSpeed="500">
+
+						<p:panelGrid id="panel" columns="3" layout="grid">
+
+							<h:panelGrid columns="2">
+								<p:outputLabel for="dtInicial" value="Data início" />
+
+								<p:calendar id="dtInicial"
+									value="#{sinistroView.filtro.dataInicio}" showOn="button"
+									navigator="true" locale="pt_BR" mask="true"
+									pattern="dd/MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="seguradora" value="Seguradora:" />
+								<p:inputText id="seguradora"
+									value="#{sinistroView.filtro.seguradora}" />
+
+							</h:panelGrid>
+
+							<h:panelGrid columns="2">
+								<p:outputLabel for="dtFinal" value="Data final" />
+
+								<p:calendar id="dtFinal" value="#{sinistroView.filtro.dataFim}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="dd/MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="seg" value="Segurado" />
+								<p:inputText id="seg" value="#{sinistroView.filtro.segurado}"></p:inputText>
+							</h:panelGrid>
+
+						</p:panelGrid>
+						<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+							actionListener="#{sinistroView.pesquisar()}" process="@all"
+							update="@form:tbl, msgs" icon="ui-icon-disk" />
+					</p:fieldset>
+
+					<h:panelGrid columns="1" cellpadding="10">
+						<!-- Inicio da tabela -->
+						<p:dataTable id="tbl" var="sinistro"
+							value="#{sinistroView.sinistros}" editable="true"
+							emptyMessage="Tabela de sinistro vazia"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							sortBy="#{lst.id}" style="margin-bottom:20px">
+
+							<p:ajax event="rowEdit" listener="#{sinistroView.onEdit}"
+								update=":form:msgs" />
+							<p:ajax event="rowEditCancel" listener="#{sinistroView.onCancel}"
+								update=":form:msgs" />
+
+							<f:facet name="header">
+                                Listagem de sinistros
+                        </f:facet>
+
+							<p:column style="width:16px">
+								<p:rowToggler />
+							</p:column>
+							<p:column sortBy="#{sinistro.id}" visible="false">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{sinistro.id}" />
+							</p:column>
+
+							<p:column sortBy="#{sinistro.dataSinistro}">
+								<f:facet name="header">
+									<h:outputText value="Data do Sinistro" />
+								</f:facet>
+								<h:outputText value="#{sinistro.dataSinistro}">
+									<f:convertDateTime locale="pt_BR" dateStyle="long"
+										pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{sinistro.sinistro}">
+								<f:facet name="header">
+									<h:outputText value="Sinistro" />
+								</f:facet>
+								<h:outputText value="#{sinistro.sinistro}" />
+							</p:column>
+
+							<p:column sortBy="#{sinistro.produtor.segurado}">
+								<f:facet name="header">
+									<h:outputText value="Segurado" />
+								</f:facet>
+								<h:outputText value="#{sinistro.produtor.segurado}" />
+							</p:column>
+
+							<p:column sortBy="#{sinistro.veiculo.seguradora}">
+								<f:facet name="header">
+									<h:outputText value="Seguradora" />
+								</f:facet>
+								<h:outputText value="#{sinistro.veiculo.seguradora}" />
+							</p:column>
+
+							<p:column sortBy="#{sinistro.veiculo.apolice}">
+								<f:facet name="header">
+									<h:outputText value="Apolice" />
+								</f:facet>
+								<h:outputText value="#{sinistro.veiculo.apolice}" />
+							</p:column>
+
+							<p:column sortBy="#{sinistro.valorOrcamento}">
+								<f:facet name="header">
+									<h:outputText value="Orçamento" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{sinistro.valorOrcamento}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{sinistro.valorOrcamento}"
+											styleClass="js-decimal">
+											<f:convertNumber pattern="#,##0.00" type="currency"
+												currencySymbol="R$" locale="pt" />
+										</h:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{sinistro.franquia}">
+								<f:facet name="header">
+									<h:outputText value="Franquia" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{sinistro.franquia}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{sinistro.franquia}"
+											styleClass="js-decimal">
+											<f:convertNumber pattern="#,##0.00" type="currency"
+												currencySymbol="R$" locale="pt" />
+										</h:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{sinistro.status}">
+								<f:facet name="header">
+									<h:outputText value="Status" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{sinistro.status.descricao}">
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<p:selectOneMenu value="#{sinistro.status}">
+											<f:selectItem itemLabel="---" itemValue="" />
+											<f:selectItems value="#{sinistroView.getStatus()}"
+												var="perfil" itemValue="#{perfil}"
+												itemLabel="#{perfil.descricao}" />
+										</p:selectOneMenu>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+
+							<p:column style="width:80px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Atualizar" />
+								</f:facet>
+								<p:commandLink oncomplete="PF('dlgObser').show();"
+									process="@this" update="@form:dialogObser"
+									action="#{sinistroView.mostrarObservacao(sinistro)}">
+									<p:graphicImage name="images/nota.png" height="20" width="20" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Detalhe" />
+								</f:facet>
+								<p:commandLink oncomplete="PF('dlgDetalhe').show();"
+									process="@this" update="@form:dialogDetalhe"
+									action="#{sinistroView.detalhe(sinistro)}">
+									<p:graphicImage name="images/lupa.png" height="20" width="20" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Deletar" />
+								</f:facet>
+								<p:commandLink
+									actionListener="#{sinistroView.deletarSinistro(sinistro)}"
+									process="@this" update="@form:tbl, @form:msgs">
+									<p:graphicImage name="images/trash-icon.png" height="20"
+										width="20" />
+									<!-- 									<p:confirm header="Confirmação" message="Confirmar exclusão?" -->
+									<!-- 										icon="ui-icon-alert" /> -->
+								</p:commandLink>
+							</p:column>
+
+							<p:rowExpansion>
+								<p:dataTable var="detalhe" value="#{sinistro.historico}">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Data" />
+										</f:facet>
+										<h:outputText value="#{detalhe.data}">
+											<f:convertDateTime locale="pt_BR" dateStyle="long"
+												pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Status" />
+										</f:facet>
+										<h:outputText value="#{detalhe.status}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Descrição" />
+										</f:facet>
+										<h:outputText value="#{detalhe.descricao}" />
+									</p:column>
+								</p:dataTable>
+							</p:rowExpansion>
+
+						</p:dataTable>
+
+
+						<p:dialog id="dialogObser" header="Observações" modal="true"
+							widgetVar="dlgObser" minimizable="true" maximizable="true"
+							responsive="true" resizable="true">
+
+							<h:form>
+								<h:panelGrid columns="1" id="gridObser">
+									<p:selectOneMenu id="status"
+										value="#{sinistroView.sinistroBean.status}">
+										<f:selectItem itemLabel="---" itemValue="" />
+										<f:selectItems value="#{sinistroView.getStatus()}"
+											var="perfil" itemValue="#{perfil}"
+											itemLabel="#{perfil.descricao}" />
+										<p:ajax event="blur" update="out2" />
+									</p:selectOneMenu>
+									<p:inputTextarea rows="5" cols="30" counter="display"
+										style="width: 95%; height: 90%" maxlength="200"
+										counterTemplate="{0} quantidade de caracteres."
+										autoResize="true"
+										value="#{sinistroView.sinistroBean.observacoes}" id="area">
+										<p:ajax event="blur" update="out2" />
+									</p:inputTextarea>
+									<h:outputText id="display" />
+								</h:panelGrid>
+								<p:commandButton value="Atualizar" update="form"
+									actionListener="#{sinistroView.atualizarHistorico()}"
+									oncomplete="PF('dlgObser').hide();" process="@this" id="out2" />
+								<p:commandButton value="Cancelar"
+									oncomplete="PF('dlgObser').hide();" />
+
+							</h:form>
+						</p:dialog>
+
+						<ui:include src="sinistrodialog.xhtml" />
+
+					</h:panelGrid>
+				</h:form>
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

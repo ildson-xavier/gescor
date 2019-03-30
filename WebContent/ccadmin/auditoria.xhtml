@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<p:panel header="Consulta de log de auditoria">
+				<h:form id="form">
+					<p:messages id="msgs" showDetail="true" closable="true" />
+					<!-- <p:growl id="msgs" showDetail="true"/>-->
+
+					<p:fieldset legend="Filtro" toggleable="true" collapsed="false"
+						toggleSpeed="500">
+
+						<p:panelGrid id="panel" columns="5" layout="grid">
+
+							<h:panelGrid columns="3">
+								<p:outputLabel for="dtInicio" value="Data de alteração:" />
+
+								<p:calendar id="dtInicio" value="#{auditoriaView.dtInicio}" showOn="button" navigator="true"
+									locale="pt_BR" mask="true" pattern="dd/MM/yyyy"
+									style="width:177px" />
+
+								<p:calendar id="dtFinal" value="#{auditoriaView.dtFim}" showOn="button" navigator="true"
+									locale="pt_BR" mask="true" pattern="dd/MM/yyyy"
+									style="width:177px" />
+
+							</h:panelGrid>
+
+						</p:panelGrid>
+						<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+							actionListener="#{auditoriaView.pesquisar()}" update="@form:tbl"
+							icon="ui-icon-disk" />
+
+					</p:fieldset>
+
+					<h:panelGrid columns="1" cellpadding="10">
+						<!-- Inicio da tabela -->
+						<p:dataTable id="tbl" var="aud"
+							value="#{auditoriaView.auditorias}"
+							emptyMessage="Tabela de auditoria vazia"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							selectionMode="single" rowKey="#{aud.id}" sortBy="#{aud.id}"
+							style="margin-bottom:20px">
+
+							<f:facet name="header">
+                                Listagem de auditoria
+                        </f:facet>
+
+							<p:column style="width:16px">
+								<p:rowToggler />
+							</p:column>
+							<p:column sortBy="#{aud.id}" visible="false">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{aud.id}" />
+							</p:column>
+
+							<p:column sortBy="#{aud.periodo}">
+								<f:facet name="header">
+									<h:outputText value="Período" />
+								</f:facet>
+								<h:outputText value="#{aud.periodo}">
+									<f:convertDateTime locale="pt_BR" dateStyle="long"
+										pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{aud.dataAlteracao}">
+								<f:facet name="header">
+									<h:outputText value="Data alteração" />
+								</f:facet>
+								<h:outputText value="#{aud.dataAlteracao}">
+									<f:convertDateTime locale="pt_BR" timeZone="America/Sao_Paulo"  dateStyle="long"
+										pattern="dd/MM/yyyy HH:mm:ss" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{aud.usuario.nome}">
+								<f:facet name="header">
+									<h:outputText value="Usuário que alterou" />
+								</f:facet>
+								<h:outputText value="#{aud.usuario.nome}" />
+							</p:column>
+
+							<p:column sortBy="#{aud.tipoLancamento}">
+								<f:facet name="header">
+									<h:outputText value="Tipo lançamento" />
+								</f:facet>
+								<h:outputText value="#{aud.tipoLancamento}" />
+							</p:column>
+
+							<p:column sortBy="#{aud.tipoAlteracao}">
+								<f:facet name="header">
+									<h:outputText value="Tipo alteração" />
+								</f:facet>
+								<h:outputText value="#{aud.tipoAlteracao}" />
+							</p:column>
+
+							<p:column sortBy="#{aud.idRegistro}">
+								<f:facet name="header">
+									<h:outputText value="Registro" />
+								</f:facet>
+								<h:outputText value="#{aud.idRegistro}" />
+							</p:column>
+
+							<p:column sortBy="#{aud.valorAnterior}">
+								<f:facet name="header">
+									<h:outputText value="Valor anterior" />
+								</f:facet>
+								<h:outputText value="#{aud.valorAnterior}" />
+							</p:column>
+
+							<p:column sortBy="#{aud.valorAtual}">
+								<f:facet name="header">
+									<h:outputText value="Valor atual" />
+								</f:facet>
+								<h:outputText value="#{aud.valorAtual}" />
+							</p:column>
+
+							<p:rowExpansion>
+								<p:dataTable var="detalhe" value="#{aud.lancs}">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Referência" />
+										</f:facet>
+										<h:outputText value="#{detalhe.idRef}" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Segurado" />
+										</f:facet>
+										<h:outputText value="#{detalhe.segurado}" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Produtor" />
+										</f:facet>
+										<h:outputText value="#{detalhe.produtor}" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Período" />
+										</f:facet>
+										<h:outputText value="#{detalhe.periodo}">
+											<f:convertDateTime locale="pt_BR" dateStyle="long"
+												pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Data inclusão" />
+										</f:facet>
+										<h:outputText value="#{detalhe.dataInclusao}">
+											<f:convertDateTime locale="pt_BR" dateStyle="long"
+												pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Seguradora" />
+										</f:facet>
+										<h:outputText value="#{detalhe.seguradora}" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Parcela" />
+										</f:facet>
+										<h:outputText value="#{detalhe.parcela}" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Comissão bruta" />
+										</f:facet>
+										<h:outputText value="#{detalhe.comissao}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Imposto" />
+										</f:facet>
+										<h:outputText value="#{detalhe.imposto}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Comissão líquida" />
+										</f:facet>
+										<h:outputText value="#{detalhe.comissaoLiquida}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Descrição" />
+										</f:facet>
+										<h:outputText value="#{detalhe.descricao}" />
+									</p:column>
+
+								</p:dataTable>
+							</p:rowExpansion>
+
+						</p:dataTable>
+					</h:panelGrid>
+				</h:form>
+			</p:panel>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

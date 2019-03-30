@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+			<h:outputScript library="js" name="ccomissao.js" />
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false" >
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<p:panel header="Cadastro de Notas">
+				<h:form id="form">
+					<p:messages id="msgs" showDetail="true" closable="true" />
+					<!-- <p:growl id="msgs" showDetail="true"/>-->
+
+					<p:fieldset legend="Filtro" toggleable="true" collapsed="false"
+						toggleSpeed="500">
+
+						<p:panelGrid id="panel" columns="3" layout="grid">
+
+							<h:panelGrid columns="2">
+								<p:outputLabel for="dtFinal" value="Período:" />
+
+								<p:calendar id="dtFinal" value="#{notaView.dataPesquisa}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="seguradora" value="Seguradora:" />
+
+								<p:selectOneMenu id="seguradora"
+									value="#{notaView.seguradoraPesquisa}" required="false"
+									label="Seguradora" style="width: 190px">
+									<f:selectItem itemLabel="Selecione" itemValue="" />
+									<f:selectItems value="#{seguradoraView.listarSeguradoras()}"
+										var="perfil" itemValue="#{perfil.nome}"
+										itemLabel="#{perfil.nome}" />
+								</p:selectOneMenu>
+
+
+							</h:panelGrid>
+
+						</p:panelGrid>
+						<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+							actionListener="#{notaView.pesquisarNotas()}" update="@form:tbl"
+							icon="ui-icon-disk" />
+
+						<p:commandButton value="Incluir nota" ajax="true" id="incluir"
+							oncomplete="PF('dlgIncluir').show();" process="@this"
+							update="@form:dialogIncluir" icon="ui-icon-disk" />
+
+						<p:commandButton value="Incluir nota adicional" ajax="true"
+							id="incluirExtrato" oncomplete="PF('dlgIncluirExtrato').show();"
+							process="@this" update="@form:dialogIncluirExtrato"
+							icon="ui-icon-disk" />
+					</p:fieldset>
+
+					<h:panelGrid columns="1" cellpadding="10">
+						<!-- Inicio da tabela -->
+						<p:dataTable id="tbl" var="nota" value="#{notaView.notas}"
+							editable="true" emptyMessage="Tabela de notas vazia"
+							rowStyleClass="#{nota.vlrNota.intValue() ne nota.vlrComissao.intValue() ? 'red_color' : null}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							selectionMode="single" rowKey="#{nota.id}" sortBy="#{lst.id}"
+							style="margin-bottom:20px">
+
+							<p:ajax event="rowEdit" listener="#{notaView.onEdit}"
+								update=":form:msgs" />
+							<p:ajax event="rowEditCancel" listener="#{notaView.onCancel}"
+								update=":form:msgs" />
+
+							<f:facet name="header">
+                                Listagem de notas
+                        </f:facet>
+
+							<p:column style="width:16px">
+								<p:rowToggler />
+							</p:column>
+							<p:column sortBy="#{nota.id}" visible="false">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{nota.id}" />
+							</p:column>
+
+							<p:column sortBy="#{nota.periodo}">
+								<f:facet name="header">
+									<h:outputText value="Período" />
+								</f:facet>
+								<h:outputText value="#{nota.periodo}" />
+							</p:column>
+
+							<p:column sortBy="#{nota.seguradora}">
+								<f:facet name="header">
+									<h:outputText value="Seguradora" />
+								</f:facet>
+								<h:outputText value="#{nota.seguradora}" />
+							</p:column>
+
+							<p:column sortBy="#{nota.qtqArquivosComissao}">
+								<f:facet name="header">
+									<h:outputText value="Arquivos Processados" />
+								</f:facet>
+								<h:outputText value="#{nota.qtqArquivosComissao}" />
+							</p:column>
+
+							<p:column sortBy="#{nota.vlrComissao}">
+								<f:facet name="header">
+									<h:outputText value="Comissão" />
+								</f:facet>
+								<h:outputText value="#{nota.vlrComissao}">
+									<f:convertNumber type="currency" currencySymbol="R$"
+										locale="pt" />
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{nota.vlrNota}">
+								<f:facet name="header">
+									<h:outputText value="Valor Nota" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{nota.vlrNota}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText id="nota" value="#{nota.vlrNota}"
+											styleClass="js-decimal" onkeyup="somenteNumeros(this);">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" locale="pt" />
+										</h:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{nota.vlrExtrato}">
+								<f:facet name="header">
+									<h:outputText value="Valor Nota Adicional" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{nota.vlrExtrato}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{nota.vlrExtrato}"
+											styleClass="js-decimal" id="extrato"
+											onkeyup="somenteNumeros(this);">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" locale="pt" />
+										</h:inputText>
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column style="width:80px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Observações" />
+								</f:facet>
+								<p:commandLink oncomplete="PF('dlgObser').show();"
+									process="@this" update="@form:dialogObser"
+									action="#{notaView.mostrarObservacao(nota)}">
+									<p:graphicImage name="images/nota.png" height="20" width="20" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column style="width:30px; height: 30px">
+								<f:facet name="header">
+									<h:outputText value="Editar" />
+								</f:facet>
+								<p:rowEditor />
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Atualizar" />
+								</f:facet>
+								<p:commandLink ajax="true"
+									actionListener="#{notaView.atualizarNota(nota)}" process="@all"
+									update="@form">
+									<p:graphicImage name="images/atualizar.png" height="20"
+										width="20" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Deletar" />
+								</f:facet>
+								<p:commandLink actionListener="#{notaView.deletarNota(nota)}"
+									process="@this" update="@form:tbl, @form:msgs">
+									<p:graphicImage name="images/trash-icon.png" height="20"
+										width="20" />
+									<p:confirm header="Confirmação" message="Confirmar exclusão?"
+										icon="ui-icon-alert" />
+								</p:commandLink>
+							</p:column>
+
+							<p:column style="width:50px; text-align: center">
+								<f:facet name="header">
+									<h:outputText value="Detalhe" />
+								</f:facet>
+								<p:commandLink oncomplete="PF('dlg').show();" process="@this"
+									update="@form:dialog" action="#{notaView.notaLancamento()}">
+									<p:graphicImage name="images/lupa.png" height="20" width="20" />
+									<f:setPropertyActionListener target="#{notaView.lancamentos}"
+										value="#{nota}" />
+								</p:commandLink>
+							</p:column>
+
+
+							<p:rowExpansion>
+								<p:dataTable var="detalhe" value="#{nota.detalhe}">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="produtor" />
+										</f:facet>
+										<h:outputText value="#{detalhe.produtor}" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Comissão" />
+										</f:facet>
+										<h:outputText value="#{detalhe.vlrComissaoBruto}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Imposto" />
+										</f:facet>
+										<h:outputText value="#{detalhe.vlrImposto}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Prêmio Líquido" />
+										</f:facet>
+										<h:outputText value="#{detalhe.vlrLiquido}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+								</p:dataTable>
+							</p:rowExpansion>
+
+							<p:columnGroup type="footer">
+								<p:row>
+									<p:column colspan="4" style="text-align:right"
+										footerText="Totais" />
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText value="#{notaView.vlrComissao}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText value="#{notaView.vlrNota}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column style="margin-left: 40px">
+										<f:facet name="footer">
+											<h:outputText value="#{notaView.vlrExtrato}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</f:facet>
+									</p:column>
+
+									<p:column footerText=" " />
+									<p:column footerText=" " />
+									<p:column footerText=" " />
+									<p:column footerText=" " />
+									<p:column footerText=" " />
+								</p:row>
+							</p:columnGroup>
+
+						</p:dataTable>
+
+
+
+						<p:dialog id="dialogObser" header="Observações" modal="true"
+							widgetVar="dlgObser" minimizable="true" maximizable="true"
+							responsive="true" resizable="true">
+
+							<h:form>
+								<h:panelGrid columns="1" id="gridObser">
+									<p:inputTextarea rows="5" cols="30" counter="display"
+										style="width: 95%; height: 90%" maxlength="200"
+										counterTemplate="{0} quantidade de caracteres."
+										autoResize="true" value="#{notaView.notaBean.observacao}"
+										id="area">
+										<p:ajax event="blur" update="out2" />
+									</p:inputTextarea>
+									<h:outputText id="display" />
+								</h:panelGrid>
+								<p:commandButton value="Atualizar" update="form:msgs, area"
+									actionListener="#{notaView.atualizarObservacao()}"
+									oncomplete="PF('dlgObser').hide();" process="@this" id="out2" />
+								<p:commandButton value="Cancelar"
+									oncomplete="PF('dlgObser').hide();" />
+								<!--  -->
+							</h:form>
+						</p:dialog>
+
+
+						<p:dialog id="dialog" header="Arquivos processados" modal="true"
+							width="50%" widgetVar="dlg" minimizable="true" maximizable="true"
+							responsive="true" resizable="true">
+							<p:dataTable var="lancamento"
+								value="#{notaView.lancamentos.getLancamento()}">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Período" />
+									</f:facet>
+									<h:outputText value="#{lancamento.periodo}">
+										<f:convertDateTime locale="pt_BR" dateStyle="long"
+											pattern="dd/MM/yyyy" />
+									</h:outputText>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Seguradora" />
+									</f:facet>
+									<h:outputText value="#{lancamento.seguradora}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Comissão" />
+									</f:facet>
+									<h:outputText value="#{lancamento.vlrComissaoBruto}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt" />
+									</h:outputText>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Imposto" />
+									</f:facet>
+									<h:outputText value="#{lancamento.vlrImposto}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt" />
+									</h:outputText>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Prêmio Líquido" />
+									</f:facet>
+									<h:outputText value="#{lancamento.vlrLiquido}">
+										<f:convertNumber type="currency" currencySymbol="R$"
+											locale="pt" />
+									</h:outputText>
+								</p:column>
+
+							</p:dataTable>
+						</p:dialog>
+					</h:panelGrid>
+
+					<p:dialog id="dialogIncluir" header=" " modal="true" width="25%"
+						widgetVar="dlgIncluir" minimizable="true" maximizable="true"
+						responsive="true" resizable="true">
+
+						<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+						<h:outputScript library="js" name="ccomissao.js" />
+
+						<p:panel id="basic" header="Incluir nota"
+							style="margin-bottom:20px">
+
+							<h:panelGrid columns="1">
+								<p:outputLabel for="periodo" value="Periódo:" />
+
+								<p:calendar id="periodo" value="#{notaView.dataInclusao}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="tipo" value="Seguradora:" />
+								<p:selectOneMenu id="tipo"
+									value="#{notaView.seguradoraInclusao}" required="false"
+									label="Seguradora" style="width: 190px">
+									<f:selectItem itemLabel="Selecione" itemValue="" />
+									<f:selectItems value="#{seguradoraView.listarSeguradoras()}"
+										var="perfil" itemValue="#{perfil.nome}"
+										itemLabel="#{perfil.nome}" />
+								</p:selectOneMenu>
+
+
+								<p:outputLabel for="vlr-dialog" value="Nota" />
+								<p:inputText id="vlr-dialog" required="true" label="Comissao"
+									styleClass="js-decimal" style="width: 190px"
+									value="#{notaView.valor}">
+									<f:convertNumber pattern="#,##0.00;(#,##0.00)" type="currency"
+										currencySymbol="R$" locale="pt" />
+								</p:inputText>
+							</h:panelGrid>
+
+							<p:commandButton value="Salvar" ajax="true" id="inc"
+								update="@form" actionListener="#{notaView.incluirNota()}"
+								icon="ui-icon-disk" />
+
+						</p:panel>
+
+						<script>
+							$(function() {
+								var decimal = $('.js-decimal');
+								decimal.maskMoney({
+									decimal : ",",
+									thousands : ".",
+									allowZero : true,
+									allowNegative : true
+								});
+							});
+						</script>
+					</p:dialog>
+
+
+					<p:dialog id="dialogIncluirExtrato" header=" " modal="true"
+						width="25%" widgetVar="dlgIncluirExtrato" minimizable="true"
+						maximizable="true" responsive="true" resizable="true">
+
+						<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+						<h:outputScript library="js" name="ccomissao.js" />
+
+						<p:panel id="basicExtrato" header="Incluir extrato"
+							style="margin-bottom:20px">
+
+							<h:panelGrid columns="1">
+								<p:outputLabel for="periodo" value="Período:" />
+
+								<p:calendar id="periodoExtrato" value="#{notaView.dataExtrato}"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="MM/yyyy" style="width:177px" />
+
+								<p:outputLabel for="tipoE" value="Seguradora:" />
+								<p:selectOneMenu id="tipoE"
+									value="#{notaView.seguradoraExtrato}" required="false"
+									label="Seguradora" style="width: 190px">
+									<f:selectItem itemLabel="Selecione" itemValue="" />
+									<f:selectItems value="#{seguradoraView.listarSeguradoras()}"
+										var="perfil" itemValue="#{perfil.nome}"
+										itemLabel="#{perfil.nome}" />
+								</p:selectOneMenu>
+
+
+								<p:outputLabel for="vlr-dialogE" value="Nota" />
+								<p:inputText id="vlr-dialogE" required="true" label="Comissao"
+									styleClass="js-decimal" style="width: 190px"
+									value="#{notaView.valorExtrato}">
+									<f:convertNumber pattern="#,##0.00;(#,##0.00)" type="currency"
+										currencySymbol="R$" locale="pt" />
+								</p:inputText>
+							</h:panelGrid>
+
+							<p:commandButton value="Salvar" ajax="true" id="incE"
+								update="@form" actionListener="#{notaView.incluirExtrato()}"
+								icon="ui-icon-disk" />
+
+						</p:panel>
+
+						<script>
+							$(function() {
+								var decimal = $('.js-decimal');
+								decimal.maskMoney({
+									decimal : ",",
+									thousands : ".",
+									allowZero : true,
+									allowNegative : true
+								});
+							});
+						</script>
+					</p:dialog>
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+						message="Confirmar exclusão?">
+						<p:commandButton value="Sim" type="button"
+							styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+						<p:commandButton value="Não" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+					</p:confirmDialog>
+
+				</h:form>
+			</p:panel>
+			<script>
+				function somenteNumeros(num) {
+					configurarMoeda();
+				}
+				function configurarMoeda() {
+					$(".js-decimal").maskMoney({
+						decimal : ",",
+						thousands : ".",
+						allowZero : true,
+						allowNegative : true
+					});
+				}
+
+				$(document).ready(function() {
+					configurarMoeda();
+				});
+			</script>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

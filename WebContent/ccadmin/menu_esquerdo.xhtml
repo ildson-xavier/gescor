@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<title></title>
+</h:head>
+<h:body>
+
+	<h:form id="form_menu">
+		<p:growl id="messages" showDetail="false" />
+
+		
+		<p:menu >
+			<p:submenu label="Ajax">
+				<p:menuitem value="Save" 
+					update="messages" icon="ui-icon-disk" />
+				<p:menuitem value="Update" 
+					update="messages" icon="ui-icon-arrowrefresh-1-w" />
+					<p:menuitem value="Update" 
+					update="messages" icon="ui-icon-arrowrefresh-1-w" />
+			</p:submenu>	
+		</p:menu>
+	</h:form>
+</h:body>
+</html>
+

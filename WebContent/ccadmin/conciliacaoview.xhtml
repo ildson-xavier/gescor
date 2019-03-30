@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> -->
+</h:head>
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" header="Aguarde ..."
+				draggable="false" closable="false">
+				<p:graphicImage name="images/load.gif" width="100" />
+			</p:dialog>
+			<h:form id="form">
+				<p:messages id="msgs" showSummary="true" closable="true"/>
+				<p:tabView activeIndex="1">
+					<p:tab id="COMPONENTE_GRAFICO_CONCILIACAO_GERAL"
+						rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_CONCILIACAO_GERAL')}"
+						title="Conciliação Geral">
+						<p:panel header="Conciliação Geral"></p:panel>
+						<p:panelGrid columns="3" layout="grid">
+							<p:panelGrid columns="1" layout="grid"
+								style="border: 0px solid red; background: #fff">
+								<p:panel id="pvalor"
+									header="Situação em #{conciliacao.periodo3}"
+									style="margin-botton: 0px; border: 0px; background: #fff">
+									<h:panelGrid columns="2" cellpadding="5">
+										<h:outputText value="Receita: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.receitas3}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+
+										<h:outputText value="Despesa: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.despesas3}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+
+										<h:outputText value="#{conciliacao.situacao3}: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.valor3}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+
+									</h:panelGrid>
+								</p:panel>
+								<p:panel id="pgraficodonut" style="border: 0px">
+									<p:chart type="donut" model="#{conciliacao.donutModel3}"
+										rendered="#{conciliacao.periodo3 ne null}" responsive="true" />
+								</p:panel>
+							</p:panelGrid>
+
+
+							<p:panelGrid columns="1" layout="grid">
+								<p:panel id="pvalor2"
+									header="Situação em #{conciliacao.periodo2}"
+									style="margin-botton: 0px; border: 0px; background: #fff">
+									<h:panelGrid columns="2" cellpadding="5">
+
+										<h:outputText value="Receita: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.receitas2}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+
+										<h:outputText value="Despesa: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.despesas2}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+
+										<h:outputText value="#{conciliacao.situacao2}: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.valor2}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+									</h:panelGrid>
+								</p:panel>
+								<p:panel id="pgraficodonut2" style="border: 0px">
+									<p:chart type="donut" model="#{conciliacao.donutModel2}"
+										rendered="#{conciliacao.periodo2 ne null}" responsive="true" />
+								</p:panel>
+							</p:panelGrid>
+
+
+							<p:panelGrid columns="1" layout="grid">
+								<p:panel id="pvalor3"
+									header="Situação em #{conciliacao.periodo}"
+									style="margin-botton: 0px; border: 0px; background: #fff">
+									<h:panelGrid columns="2" cellpadding="5">
+
+										<h:outputText value="Receita: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.receitas}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+
+										<h:outputText value="Despesa: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.despesas}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+
+										<h:outputText value="#{conciliacao.situacao}: R$"
+											style="font-size: 15px; color: green" />
+										<h:outputText value="#{conciliacao.valor}"
+											style="font-size: 15px; color: green">
+											<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+												type="currency" currencySymbol="R$" />
+										</h:outputText>
+									</h:panelGrid>
+								</p:panel>
+								<p:panel id="pgraficodonut3" style="border: 0px">
+									<p:chart type="donut" model="#{conciliacao.donutModel}"
+										rendered="#{conciliacao.periodo ne null}" responsive="true" />
+								</p:panel>
+							</p:panelGrid>
+
+
+
+						</p:panelGrid>
+
+						<p:separator />
+						<p:separator />
+
+						<p:panel id="panel" header="Panel">
+							<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+								<p:panelGrid columns="8" layout="grid">
+
+									<p:outputLabel for="gr" value="Ano " />
+									<p:selectOneMenu id="gr" value="#{conciliacao.anoFiltro}"
+										required="true" label="Ano" style="width: 190px">
+										<f:selectItem itemLabel="Selecione ..." itemValue="" />
+										<f:selectItem itemLabel="2012" itemValue="2012" />
+										<f:selectItem itemLabel="2013" itemValue="2013" />
+										<f:selectItem itemLabel="2014" itemValue="2014" />
+										<f:selectItem itemLabel="2015" itemValue="2015" />
+										<f:selectItem itemLabel="2016" itemValue="2016" />
+										<f:selectItem itemLabel="2017" itemValue="2017" />
+										<f:selectItem itemLabel="2018" itemValue="2018" />
+										<f:selectItem itemLabel="2019" itemValue="2019" />
+										<f:selectItem itemLabel="2020" itemValue="2020" />
+									</p:selectOneMenu>
+
+									<p:commandButton value="Pesquisar" ajax="true" id="withIcon"
+										actionListener="#{conciliacao.criarGraficoBarrasFiltro()}"
+										update="panel" process="@this, gr" icon="ui-icon-disk" />
+								</p:panelGrid>
+
+							</p:fieldset>
+
+							<p:chart type="bar"
+								rendered="#{conciliacao.lancamentos.size() > 0}"
+								model="#{conciliacao.barModel}" style="height:400px"
+								responsive="true" />
+
+
+							<h:form id="detalhe">
+								<p:dataTable var="lst" value="#{conciliacao.lancamentos}"
+									rowStyleClass="#{lst.classificacao le 1 ? 'old' : null}"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									paginator="true" rows="6" rowsPerPageTemplate="6,11,16"
+									rendered="#{usuarioView.isAdmin()}" reflow="true">
+									<f:facet name="header">
+        						Lista detalhada de receitas e despesas
+    						</f:facet>
+
+									<p:column sortBy="#{lst.descricao}" headerText="Classificação">
+										<h:outputText value="#{lst.descricao}" />
+									</p:column>
+
+									<p:column sortBy="#{lst.valor3}" headerText="Valor">
+										<h:outputText value="#{lst.valor3}">
+											<f:convertNumber type="currency" currencySymbol="R$" />
+										</h:outputText>
+									</p:column>
+
+									<p:column sortBy="#{lst.mesAno}" headerText="Período">
+										<h:outputText value="#{lst.mesAno}" />
+									</p:column>
+
+									<p:column headerText="Visualizar"
+										style="width:72px;text-align: center">
+										<p:commandButton icon="ui-icon-search" title="View"
+											oncomplete="PF('dlg').show();" process="@this"
+											update="@form:display"
+											action="#{conciliacao.criarGraficoDonutDialog}">
+											<f:setPropertyActionListener
+												target="#{conciliacao.lancamentoBean}" value="#{lst}" />
+										</p:commandButton>
+									</p:column>
+
+								</p:dataTable>
+
+								<p:dialog header="Detalhe" showEffect="fade" hideEffect="fade"
+									responsive="true" width="800" widgetVar="dlg" modal="false"
+									resizable="true">
+									<p:panelGrid id="display" columns="2" layout="grid"
+										style="border: 0px solid red">
+										<p:panel id="pvalor"
+											header="Situação em #{conciliacao.periodoDialog}"
+											style="margin-botton: 15px">
+											<h:panelGrid columns="2" cellpadding="18">
+
+												<h:outputText value="Receita: R$"
+													style="font-size: 20px; color: green" />
+												<h:outputText value="#{conciliacao.receitasDialog}"
+													style="font-size: 20px; color: green">
+													<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+														type="currency" currencySymbol="R$" />
+												</h:outputText>
+
+												<h:outputText value="Despesa: R$"
+													style="font-size: 20px; color: green" />
+												<h:outputText value="#{conciliacao.despesasDialog}"
+													style="font-size: 20px; color: green">
+													<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+														type="currency" currencySymbol="R$" />
+												</h:outputText>
+
+												<h:outputText value="#{conciliacao.situacaoDialog}: R$"
+													style="font-size: 20px; color: green" />
+												<h:outputText value="#{conciliacao.valorDialog}"
+													style="font-size: 20px; color: green">
+													<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+														type="currency" currencySymbol="R$" />
+												</h:outputText>
+											</h:panelGrid>
+										</p:panel>
+
+
+										<p:chart type="donut" model="#{conciliacao.donutModelDialog}"
+											rendered="#{conciliacao.periodoDialog ne null}"
+											responsive="true" />
+
+									</p:panelGrid>
+
+								</p:dialog>
+							</h:form>
+						</p:panel>
+					</p:tab>
+
+
+					<!--  -->
+
+
+					<p:tab id="COMPONENTE_GRAFICO_CONCILIACAO-POR_PRODUTOR"
+						rendered="#{usuarioLoginBean.autorizador('COMPONENTE_GRAFICO_CONCILIACAO-POR_PRODUTOR')}"
+						title="Conciliação por Produtor">
+						<p:panel
+							header="Conciliação por Produtor [#{conciliacao.nmprodutor}]"
+							id="tab2">
+							<p:panel id="panelProdutor">
+								<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+									<p:panelGrid columns="8" layout="grid">
+
+										<p:outputLabel for="grp" value="Produtor: " />
+										<p:selectOneMenu id="grp" value="#{conciliacao.nmprodutor}"
+											required="true" label="Produtor" style="width: 190px">
+											<f:selectItem itemLabel="Selecione ..." itemValue="" />
+											<f:selectItems value="#{categoriaView.listarCategorias()}"
+												var="categoria" itemValue="#{categoria.tipo}"
+												itemLabel="#{categoria.tipo}" />
+										</p:selectOneMenu>
+
+										<p:commandButton value="Pesquisar" ajax="true" id="withIconp"
+											actionListener="#{conciliacao.criarGraficoDonutPorProdutorFiltroNome}"
+											update="tab2, form:msgs" process="@this, tab2" icon="ui-icon-disk" />
+									</p:panelGrid>
+
+								</p:fieldset>
+							</p:panel>
+							<p:panelGrid columns="3" layout="grid">
+								<p:panelGrid columns="1" layout="grid"
+									style="border: 0px solid red; background: #fff">
+									<p:panel id="pvalorPr"
+										header="Situação em #{conciliacao.periodoProdutor3}"
+										style="margin-botton: 0px; border: 0px; background: #fff">
+										<h:panelGrid columns="2" cellpadding="5">
+											<h:outputText value="Receita: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.receitasProdutor3}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+											<h:outputText value="Despesa: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.despesasProdutor3}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+											<h:outputText value="#{conciliacao.situacaoProdutor3}: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.valorProdutor3}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+										</h:panelGrid>
+									</p:panel>
+									<p:panel id="pgraficodonutpr" style="border: 0px">
+										<p:chart type="donut"
+											model="#{conciliacao.donutModelProdutor3}"
+											rendered="#{conciliacao.periodoProdutor3 ne null}"
+											responsive="true" />
+									</p:panel>
+								</p:panelGrid>
+
+								<p:panelGrid columns="1" layout="grid"
+									style="border: 0px solid red; background: #fff">
+									<p:panel id="pvalorPr2"
+										header="Situação em #{conciliacao.periodoProdutor2}"
+										style="margin-botton: 0px; border: 0px; background: #fff">
+										<h:panelGrid columns="2" cellpadding="5">
+											<h:outputText value="Receita: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.receitasProdutor2}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+											<h:outputText value="Despesa: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.despesasProdutor2}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+											<h:outputText value="#{conciliacao.situacaoProdutor2}: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.valorProdutor2}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+										</h:panelGrid>
+									</p:panel>
+									<p:panel id="pgraficodonutpr2" style="border: 0px">
+										<p:chart type="donut"
+											model="#{conciliacao.donutModelProdutor2}"
+											rendered="#{conciliacao.periodoProdutor2 ne null}"
+											responsive="true" />
+									</p:panel>
+								</p:panelGrid>
+
+								<p:panelGrid columns="1" layout="grid"
+									style="border: 0px solid red; background: #fff">
+									<p:panel id="pvalorPr3"
+										header="Situação em #{conciliacao.periodoProdutor}"
+										style="margin-botton: 0px; border: 0px; background: #fff">
+										<h:panelGrid columns="2" cellpadding="5">
+											<h:outputText value="Receita: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.receitasProdutor}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+											<h:outputText value="Despesa: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.despesasProdutor}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+											<h:outputText value="#{conciliacao.situacaoProdutor}: R$"
+												style="font-size: 15px; color: green" />
+											<h:outputText value="#{conciliacao.valorProdutor}"
+												style="font-size: 15px; color: green">
+												<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+													type="currency" currencySymbol="R$" />
+											</h:outputText>
+
+										</h:panelGrid>
+									</p:panel>
+									<p:panel id="pgraficodonutpr3" style="border: 0px">
+										<p:chart type="donut"
+											model="#{conciliacao.donutModelProdutor}"
+											rendered="#{conciliacao.periodoProdutor ne null}"
+											responsive="true" />
+									</p:panel>
+								</p:panelGrid>
+							</p:panelGrid>
+
+							<p:panel id="panelProdutorA"
+								header="Produtor: #{conciliacao.nmprodutor}">
+								<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+									<p:panelGrid columns="8" layout="grid">
+
+										<p:outputLabel for="grpa" value="Ano: " />
+										<p:selectOneMenu id="grpa" value="#{conciliacao.anoProdutor}"
+											required="false" label="Ano" style="width: 190px">
+											<f:selectItem itemLabel="Selecione ..." itemValue="" />
+											<f:selectItem itemLabel="2012" itemValue="2012" />
+											<f:selectItem itemLabel="2013" itemValue="2013" />
+											<f:selectItem itemLabel="2014" itemValue="2014" />
+											<f:selectItem itemLabel="2015" itemValue="2015" />
+											<f:selectItem itemLabel="2016" itemValue="2016" />
+											<f:selectItem itemLabel="2017" itemValue="2017" />
+											<f:selectItem itemLabel="2018" itemValue="2018" />
+											<f:selectItem itemLabel="2019" itemValue="2019" />
+											<f:selectItem itemLabel="2020" itemValue="2020" />
+										</p:selectOneMenu>
+
+										<p:commandButton value="Pesquisar" ajax="true" id="withIconpa"
+											actionListener="#{conciliacao.criarGraficoBarrasPorProdutorFiltro}"
+											update="panelProdutorA" process="@this, panelProdutorA"
+											icon="ui-icon-disk" />
+									</p:panelGrid>
+								</p:fieldset>
+
+								<p:chart type="bar"
+									rendered="#{conciliacao.lancamentosProdutor.size() > 0}"
+									model="#{conciliacao.barModelProdutor}" style="height:400px"
+									responsive="true" />
+
+
+								<!-- 8888888888888888888888888888 -->
+								<h:form id="detalhe2">
+									<p:dataTable var="lst"
+										value="#{conciliacao.lancamentosProdutor}"
+										rowStyleClass="#{lst.classificacao le 1 ? 'old' : null}"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										paginator="true" rows="6" rowsPerPageTemplate="6,11,16"
+										rendered="#{usuarioView.isAdmin()}" reflow="true">
+										<f:facet name="header">
+        						Lista detalhada de receitas e despesas
+    						</f:facet>
+
+										<p:column sortBy="#{lst.descricao}" headerText="Classificação">
+											<h:outputText value="#{lst.descricao}" />
+										</p:column>
+
+										<p:column sortBy="#{lst.valor3}" headerText="Valor">
+											<h:outputText value="#{lst.valor3}">
+												<f:convertNumber type="currency" currencySymbol="R$" />
+											</h:outputText>
+										</p:column>
+
+										<p:column sortBy="#{lst.mesAno}" headerText="Período">
+											<h:outputText value="#{lst.mesAno}" />
+										</p:column>
+
+										<p:column headerText="Visualizar"
+											style="width:72px;text-align: center">
+											<p:commandButton icon="ui-icon-search" title="View"
+												oncomplete="PF('dlg2').show();" process="@this"
+												update="@form:display2"
+												action="#{conciliacao.criarGraficoDonutDialogProdutor}">
+												<f:setPropertyActionListener
+													target="#{conciliacao.lancamentoBeanProdutor}"
+													value="#{lst}" />
+											</p:commandButton>
+										</p:column>
+
+									</p:dataTable>
+
+									<p:dialog header="Produtor: #{conciliacao.nmprodutor}"
+										showEffect="fade" hideEffect="fade" width="800"
+										widgetVar="dlg2" modal="false" resizable="true">
+										<p:panelGrid id="display2" columns="2" layout="grid"
+											style="border: 0px solid red">
+											<p:panel id="pvalor2"
+												header="Situação em #{conciliacao.periodoDialogProdutor}"
+												style="margin-botton: 15px">
+												<h:panelGrid columns="2" cellpadding="18">
+
+													<h:outputText value="Receita: R$"
+														style="font-size: 20px; color: green" />
+													<h:outputText value="#{conciliacao.receitasDialogProdutor}"
+														style="font-size: 20px; color: green">
+														<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+															type="currency" currencySymbol="R$" />
+													</h:outputText>
+
+													<h:outputText value="Despesa: R$"
+														style="font-size: 20px; color: green" />
+													<h:outputText value="#{conciliacao.despesasDialogProdutor}"
+														style="font-size: 20px; color: green">
+														<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+															type="currency" currencySymbol="R$" />
+													</h:outputText>
+
+													<h:outputText
+														value="#{conciliacao.situacaoDialogProdutor}: R$"
+														style="font-size: 20px; color: green" />
+													<h:outputText value="#{conciliacao.valorDialogProdutor}"
+														style="font-size: 20px; color: green">
+														<f:convertNumber pattern="#,##0.00;(#,##0.00)"
+															type="currency" currencySymbol="R$" />
+													</h:outputText>
+												</h:panelGrid>
+											</p:panel>
+
+
+											<p:chart type="donut"
+												model="#{conciliacao.donutModelDialogProdutor}"
+												rendered="#{conciliacao.periodoDialogProdutor ne null}"
+												responsive="true" />
+
+										</p:panelGrid>
+
+									</p:dialog>
+								</h:form>
+							</p:panel>
+						</p:panel>
+					</p:tab>
+
+					<!--  -->
+
+					<p:tab title="Resultado Consolidado da Conciliação Geral">
+						<p:panel id="painel-consolidado" header="Resultado Consolidado da Conciliação Geral">
+							<!-- 						<h:form id="form-conciliaca-analitica"> -->
+							<p:fieldset legend="Filtro" toggleable="true" toggleSpeed="500">
+								<p:panelGrid id="panel-conciliacao" columns="4" layout="grid">
+
+									<h:panelGrid columns="2">
+										<p:outputLabel for="dtInicio" value="Período de:" />
+
+										<p:calendar id="dtInicio" value="#{conciliacao.dataPesquisa}"
+											showOn="button" navigator="true" locale="pt_BR" mask="true"
+											pattern="MM/yyyy" style="width:177px" required="true" requiredMessage="Informe o período inicial." />
+
+									</h:panelGrid>
+
+									<h:panelGrid columns="2">
+										<p:outputLabel for="dtFinal" value="Período até:" />
+
+										<p:calendar id="dtFinal"
+											value="#{conciliacao.dataPesquisaAte}" showOn="button"
+											navigator="true" locale="pt_BR" mask="true" pattern="MM/yyyy"
+											style="width:177px" required="true" requiredMessage="Informe o período final"/>
+
+									</h:panelGrid>
+
+									<h:panelGrid columns="2">
+										<p:outputLabel for="prods" value="Produtor: " />
+										<p:selectOneMenu id="prods"
+										   required="true" requiredMessage="Informe o produtor"
+											value="#{conciliacao.nomeProdutor}" label="Produtor"
+											style="width: 190px">
+											<f:selectItem itemLabel="Selecione ..." itemValue="" />
+											<f:selectItems value="#{categoriaView.listarCategorias()}"
+												var="categoria" itemValue="#{categoria.tipo}"
+												itemLabel="#{categoria.tipo}" />
+												<p:ajax event="blur" update="grp" listener="#{conciliacao.updateProdutor()}"/>
+										</p:selectOneMenu>
+									</h:panelGrid>
+
+								</p:panelGrid>
+
+								<p:commandButton value="Pesquisar" ajax="true"
+									id="withIcon-concilicao"
+									actionListener="#{conciliacao.pesquisarResultado()}"
+									update="painel-consolidado, form:msgs" icon="ui-icon-disk" />
+							</p:fieldset>
+
+							<p:separator />
+							<h:panelGrid columns="1" cellpadding="10">
+								<p:dataTable id="tblConciliacao" var="lst"
+									value="#{conciliacao.resultados}"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+									paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+									sortBy="#{lst.sequencia}" style="margin-bottom:20px">
+
+									<f:facet name="header">
+                                		Resultado Consolidado da Conciliação Geral
+                            		</f:facet>
+
+									<f:facet name="{Exporters}">
+										<h:commandLink>
+											<p:graphicImage name="images/excel.png" width="26" />
+											<p:dataExporter type="xls" target="tblConciliacao"
+												fileName="lst" />
+										</h:commandLink>
+
+										<h:commandLink>
+											<p:graphicImage name="images/pdf.png" width="26" />
+											<p:dataExporter type="pdf" target="tblConciliacao"
+												fileName="lst" />
+										</h:commandLink>
+									</f:facet>
+
+									<p:column sortBy="#{lst.sequencia}" style="width: 50px;"
+										exportable="false">
+										<f:facet name="header">
+											<h:outputText value="Sequência" />
+										</f:facet>
+										<h:outputText value="#{lst.sequencia}" />
+									</p:column>
+
+									<p:column sortBy="#{lst.periodo}" style="width: 50px;">
+										<f:facet name="header">
+											<h:outputText value="Periodo" />
+										</f:facet>
+										<h:outputText value="#{lst.periodo}" />
+									</p:column>
+
+									<p:column sortBy="#{lst.produtor}" style="width: 50px;">
+										<f:facet name="header">
+											<h:outputText value="Produtor" />
+										</f:facet>
+										<h:outputText value="#{lst.produtor}" />
+									</p:column>
+
+									<p:column sortBy="#{lst.brutoComissao}" style="width: 50px;"
+										exportable="true">
+										<f:facet name="header">
+											<h:outputText value="Comissão Bruta" />
+										</f:facet>
+										<h:outputText value="#{lst.brutoComissao}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+									<p:column sortBy="#{lst.despesa}" style="width: 50px;"
+										exportable="true">
+										<f:facet name="header">
+											<h:outputText value="Despesa" />
+										</f:facet>
+										<h:outputText value="#{lst.despesa}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+									<p:column sortBy="#{lst.resultadoBruto}" style="width: 50px;"
+										exportable="true">
+										<f:facet name="header">
+											<h:outputText value="Resultado" />
+										</f:facet>
+										<h:outputText value="#{lst.resultadoBruto}">
+											<f:convertNumber type="currency" currencySymbol="R$"
+												locale="pt" />
+										</h:outputText>
+									</p:column>
+
+									<p:columnGroup type="footer">
+										<p:row>
+											<p:column colspan="3" style="text-align:right"
+												footerText="Totais" />
+											<p:column style="margin-left: 40px">
+												<f:facet name="footer">
+													<h:outputText value="#{conciliacao.comissaoBruto}">
+														<f:convertNumber type="currency" currencySymbol="R$" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+
+											<p:column style="margin-left: 40px">
+												<f:facet name="footer">
+													<h:outputText value="#{conciliacao.despesa}">
+														<f:convertNumber type="currency" currencySymbol="R$" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+											<p:column style="margin-left: 40px">
+												<f:facet name="footer">
+													<h:outputText value="#{conciliacao.resultadoBruto}">
+														<f:convertNumber type="currency" currencySymbol="R$" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+										</p:row>
+									</p:columnGroup>
+
+								</p:dataTable>
+							</h:panelGrid>
+							<!-- 						</h:form> -->
+						</p:panel>
+					</p:tab>
+
+				</p:tabView>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

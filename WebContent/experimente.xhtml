@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Gescor</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<link rel="icon" type="image/png" sizes="16x16"
+		href="resources/images/fav/favicon-16x16.png" />
+	<style type="text/css">
+<!--
+._body { //
+	background-image: url("#{resource['images/fundo1.png']}");
+	background-image: url(resources/images/fundo2.jpg);
+	background-size: 100%;
+	background-attachment: fixed;
+}
+
+.img {
+	background-image: url("#{resource['images/experimente.jpg']}");
+}
+
+.spaco {
+	margin: 5px 5px 5px 5px;
+}
+
+.topo {
+	margin-top: 10%;
+}
+
+.topo2 {
+	margin-top: 6%;
+}
+
+.menu {
+	height: 100px;
+	background-color: blue;
+}
+
+.anuncio {
+	height: 100px;
+	background-color: green;
+}
+
+.conteudo {
+	height: 100px;
+	background-color: red;
+}
+
+.link {
+	font-size: 12px !important;
+	text-decoration: none;
+}
+-->
+</style>
+
+
+
+	<h:outputStylesheet library="primefaces" name="grid/grid.css" />
+</h:head>
+<h:body styleClass="_body">
+	<p:menubar>
+		<p:menuitem value="Home" url="http://www.sofcor.com.br/" />
+		<p:menuitem value="Sobre o Gescor"
+			url="http://www.sofcor.com.br/gc/gescor.html" />
+	</p:menubar>
+
+	<div class="ui-grid  ui-grid-responsive">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-2"></div>
+			<div class="ui-grid-col-8  topo2">
+				<h:form>
+					<p:outputPanel deferred="true">
+						<h3>Fique a vontade para testar o GESCOR. Qualquer dúvida
+							estamos a sua disposição.</h3>
+						<p>Antes de mais nada, precisamos te conhecer um pouquinho
+							melhor para já prepararmos as melhores opções do GESCOR para
+							você..</p>
+						<p>Quando terminar o cadastro será apresentada a tela de
+							login. Informe o login e senha cadastradas.</p>
+					</p:outputPanel>
+				</h:form>
+			</div>
+
+		</div>
+		<p:separator />
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-2"></div>
+
+			<h:form>
+				<p:growl id="msgs" showDetail="false" sticky="true" />
+
+				<div class="ui-grid-col-10">
+					<h:panelGrid id="grid" columns="4" cellpadding="5">
+						<p:outputLabel for="input" value="Nome" />
+						<p:inputText id="input" placeholder="Seu nome" size="50"
+							required="true" requiredMessage="Informe seu nome"
+							value="#{usuarioLoginBean.usuarioBean.nome}" />
+
+						<p:outputLabel for="area" value="Celular" />
+						<p:inputMask id="area" placeholder="(00) 00000-0000"
+							mask="(99) 99999-9999" size="11" maxlength="40"
+							value="#{usuarioLoginBean.usuarioBean.telefone}" />
+
+						<p:outputLabel for="mail" value="Email" />
+						<p:inputText id="mail" placeholder="seu@mail.com.br" size="30"
+							required="true" requiredMessage="Informe seu e-mail"
+							value="#{usuarioLoginBean.usuarioBean.email}" />
+
+						<p:outputLabel for="senha" value="Senha" />
+						<p:password id="senha" placeholder="Crie uma senha"
+							feedback="true" promptLabel="Informe a senha" weakLabel="Fraca"
+							goodLabel="Média" strongLabel="Segura" required="true"
+							requiredMessage="Informe a senha"
+							value="#{usuarioLoginBean.usuarioBean.senha}" />
+
+						<p:outputLabel for="login" value="Login" />
+						<p:inputText id="login"
+							placeholder="http://sofcor.com.br/seulogin" size="30"
+							required="true" requiredMessage="Informe o login"
+							value="#{usuarioLoginBean.usuarioBean.login}" />
+
+					</h:panelGrid>
+					<h:outputLabel
+						value="Ao prosseguir para a avaliação você declara que leu e entendeu os " />
+					<p:commandLink value=" Termos de Uso" onclick="PF('dlg2').show();" /><br/>
+					<p:commandButton id="salvar" value="Estou pronto para começar"
+						update="msgs" ajax="false"
+						action="#{usuarioLoginBean.salvarNovoUsuario()}" />
+					<p:commandButton id="jacad" value="Já sou cadastrado"
+						update="msgs" ajax="false" style="background: #00FF7F !important"
+						action="#{usuarioLoginBean.voltarLogin()}" immediate="true" />
+				</div>
+
+				<ui:include src="termodeuso2.xhtml"></ui:include>
+			</h:form>
+
+		</div>
+	</div>
+</h:body>
+</html>

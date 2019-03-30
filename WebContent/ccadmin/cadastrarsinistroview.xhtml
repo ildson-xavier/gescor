@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" closable="true" />
+				<p:panel id="basic"
+					header="#{!sinistroView.editar ? 'Cadastrar Sinistro' : 'Editar Sinistro'}"
+					footer=" " style="margin-bottom:20px">
+
+					<p:fieldset legend="Dados do Segurado" toggleable="true"
+						toggleSpeed="500" style="margin-bottom:20px">
+
+						<p:panelGrid id="panel" columns="3" layout="grid">
+							<h:panelGrid columns="3" cellpadding="5">
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="segurado" value="Segurado" />
+									<p:autoComplete id="segurado" maxResults="15"
+										value="#{sinistroView.produtor.segurado}"
+										completeMethod="#{sinistroView.autoCompletarSegurado}"
+										required="true" label="Segurado" size="40">
+										<p:ajax event="blur"
+											update="produtor, cpf, corretor, telefone, celular, bairro,
+										cidade, uf, endereco, numero,
+										seguradora, dataInicio, veiculo, renavan, cor, apolice, dataFim, placa"
+											listener="#{sinistroView.carregarDadosSegurado()}" />
+									</p:autoComplete>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="produtor" value="Produtor" />
+									<p:inputText id="produtor" styleClass="campo300"
+										value="#{sinistroView.produtor.produtor}"></p:inputText>
+
+									<p:outputLabel for="cpf" value="CPF/CNPJ" />
+									<p:inputText id="cpf" value="#{sinistroView.produtor.cpf}"></p:inputText>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="corretor" value="Corretor" />
+									<p:inputText id="corretor" styleClass="campo300"
+										value="#{sinistroView.produtor.corretor}"></p:inputText>
+
+									<p:outputLabel for="telefone" value="Telefone" />
+									<p:inputMask id="telefone" styleClass="campo100"
+										value="#{sinistroView.produtor.telefone}"
+										mask="(99) 9999-9999" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="celular" value="Celular" />
+									<p:inputMask id="celular" styleClass="campo100"
+										value="#{sinistroView.produtor.celular}"
+										mask="(99) 99999-9999" />
+
+									<p:outputLabel for="bairro" value="Bairro" />
+									<p:inputText id="bairro" styleClass="campo300"
+										value="#{sinistroView.produtor.bairro}"></p:inputText>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="cidade" value="Cidade" />
+									<p:inputText id="cidade" styleClass="campo300"
+										value="#{sinistroView.produtor.cidade}"></p:inputText>
+
+									<p:outputLabel for="uf" value="Uf" />
+									<p:inputText id="uf" value="#{sinistroView.produtor.uf}"
+										styleClass="campo30" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="endereco" value="Endereço" />
+									<p:inputText id="endereco" styleClass="campo300"
+										value="#{sinistroView.produtor.endereco}"></p:inputText>
+
+									<p:outputLabel for="numero" value="Numero" />
+									<p:inputText id="numero" styleClass="campo100"
+										value="#{sinistroView.produtor.numero}"></p:inputText>
+								</h:panelGrid>
+							</h:panelGrid>
+						</p:panelGrid>
+					</p:fieldset>
+
+					<p:fieldset legend="Dados do Veiculo" toggleable="true"
+						toggleSpeed="500" style="margin-bottom:20px">
+
+						<p:panelGrid id="panelVeiculo" columns="3" layout="grid">
+							<h:panelGrid columns="3" cellpadding="5">
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="seguradora" value="Seguradora" />
+									<p:inputText id="seguradora" styleClass="campo300"
+										value="#{sinistroView.apoliceVeiculo.seguradora}" />
+
+									<p:outputLabel for="dataInicio" value="Apolice DateInicio" />
+									<p:calendar id="dataInicio" styleClass="campo200"
+										value="#{sinistroView.apoliceVeiculo.apoliceDateInicio}"
+										required="true" showOn="button" navigator="true"
+										locale="pt_BR" mask="true" pattern="dd/MM/yyyy"
+										style="width:177px">
+									</p:calendar>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="dataFim" value="Apolice DateFim" />
+									<p:calendar id="dataFim" styleClass="campo200"
+										value="#{sinistroView.apoliceVeiculo.apoliceDateFim}"
+										required="true" showOn="button" navigator="true"
+										locale="pt_BR" mask="true" pattern="dd/MM/yyyy"
+										style="width:177px">
+									</p:calendar>
+
+									<p:outputLabel for="veiculo" value="Veiculo" />
+									<p:inputText id="veiculo"
+										value="#{sinistroView.apoliceVeiculo.tipoVeiculo}" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="placa" value="Placa" />
+									<p:inputText id="placa" styleClass="campo100"
+										value="#{sinistroView.apoliceVeiculo.placa}" />
+
+									<p:outputLabel for="cor" value="Cor" />
+									<p:inputText id="cor" styleClass="campo100"
+										value="#{sinistroView.apoliceVeiculo.cor}" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="renavan" value="Renavan" />
+									<p:inputText id="renavan" styleClass="campo100"
+										value="#{sinistroView.apoliceVeiculo.renavan}" />
+
+									<p:outputLabel for="apolice" value="Apolice" />
+									<p:inputText id="apolice" styleClass="campo200"
+										value="#{sinistroView.apoliceVeiculo.apolice}"></p:inputText>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="orcamento" value="Orcamento" />
+									<p:inputText id="orcamento" styleClass="js-decimal campo100"
+									value="#{sinistroView.sinistro.valorOrcamento}">
+										<f:convertNumber currencyCode="BRL" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</p:inputText>
+
+									<p:outputLabel for="franquia" value="Franquia" />
+									<p:inputText id="franquia"
+										value="#{sinistroView.sinistro.franquia}"
+										styleClass="js-decimal campo100">
+										<f:convertNumber currencyCode="BRL" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</p:inputText>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="sinistro" value="Sinistro" />
+									<p:inputText id="sinistro" styleClass="campo100"
+										value="#{sinistroView.sinistro.sinistro}" />
+
+									<p:outputLabel for="dataSin" value="Dada do Sinistro" />
+									<p:calendar id="dataSin" styleClass="campo100"
+										value="#{sinistroView.sinistro.dataSinistro}" required="true"
+										showOn="button" navigator="true" locale="pt_BR" mask="true"
+										pattern="dd/MM/yyyy" style="width:177px">
+									</p:calendar>
+
+								</h:panelGrid>
+
+							</h:panelGrid>
+						</p:panelGrid>
+					</p:fieldset>
+
+					<p:fieldset legend="Dados da Oficina" toggleable="true"
+						toggleSpeed="500" style="margin-bottom:20px">
+						<p:panelGrid id="panelOficina" columns="3" layout="grid">
+							<h:panelGrid columns="3" cellpadding="5">
+								<h:panelGrid columns="2" styleClass="grade">
+									<p:outputLabel for="nomeOf" value="Nome" />									
+									
+									<p:autoComplete id="nomeOf" maxResults="15"
+										value="#{sinistroView.oficina.nome}"
+										completeMethod="#{sinistroView.autoCompletarOficina}"
+										required="true" label="Nome" size="40">
+										<p:ajax event="blur"
+											update="logadouroOf, responsavelOf, telefoneOf, celularOf"
+											listener="#{sinistroView.carregarDadosOficina()}" />
+									</p:autoComplete>	
+
+									<p:outputLabel for="logadouroOf" value="Logadouro" />
+									<p:inputText id="logadouroOf" styleClass="campo300"
+										value="#{sinistroView.oficina.logadouro}" />
+								</h:panelGrid>
+
+								<h:panelGrid columns="1" styleClass="grade">
+									<h:panelGrid columns="2">
+										<p:outputLabel for="responsavelOf" value="Responsavel" />
+										<p:inputText id="responsavelOf" styleClass="campo300"
+											value="#{sinistroView.oficina.responsavel}" />
+									</h:panelGrid>
+	
+									<h:panelGrid columns="4">
+										<p:outputLabel for="telefoneOf" value="Telefone" />
+										<p:inputMask id="telefoneOf" styleClass="campo100"
+											value="#{sinistroView.oficina.telefone}"
+											mask="(99) 99999-9999" />
+	
+										<p:outputLabel for="celularOf" value="Celular" />
+										<p:inputMask id="celularOf" styleClass="campo100"
+											value="#{sinistroView.oficina.celular}" mask="(99) 9999-9999" />
+									</h:panelGrid>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2" styleClass="grade"  rendered="false">
+									<p:outputLabel for="car" value="Status " />
+									<p:selectOneMenu id="car"
+										value="#{sinistroView.sinistro.status}">
+										<f:selectItem itemLabel="---" itemValue="" />
+										<f:selectItems value="#{sinistroView.getStatus()}"
+											var="perfil" itemValue="#{perfil}"
+											itemLabel="#{perfil.descricao}" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+							</h:panelGrid>
+						</p:panelGrid>
+					</p:fieldset>
+
+					<p:commandButton value="Salvar" ajax="false" id="withIcon"
+						actionListener="#{sinistroView.salvar()}" icon="ui-icon-disk" />
+					<p:commandButton value="Cancelar" immediate="true" ajax="false" id="btnCancelar"
+						action="#{sinistroView.cancelar()}" icon="ui-icon-disk" />
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+
+</h:body>
+</html>

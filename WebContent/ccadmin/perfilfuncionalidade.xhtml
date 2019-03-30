@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition>
+
+		<p:panel header="Cadastro de Perfil Funcionalidade">
+
+			<p:outputLabel for="per" value="Perfil: " />
+			<p:inputText id="per" value="#{usuarioView.descricao}" label="Nome" />
+
+			<p:commandButton value="Adicionar perfil" ajax="false"
+				action="#{usuarioView.adicionarPerfil()}" icon="ui-icon-disk" />
+
+			<p:separator />
+			<p:tabView id="tab" value="#{usuarioView.perfis}" var="perfil">
+				<p:ajax event="tabClose" listener="#{usuarioView.onTabClose}"
+					onsuccess="PF('dlg1').show();" update="@form:msgs" />
+
+				<p:tab title="#{perfil.descricao}" closable="true">
+					<p:panel id="basic2" header="Funcionalidades" footer=" "
+						style="margin-bottom:20px">
+
+						<p:dataTable id="tbl2" var="lst" value="#{perfil.funcionalidades}"
+							editable="true"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+							sortBy="#{lst.id}" style="margin-bottom:20px">
+
+							<p:ajax event="rowEdit" listener="#{usuarioView.onEditFunc}"
+								update=":form:msgs" />
+							<p:ajax event="rowEditCancel"
+								listener="#{usuarioView.onCancelFunc}" update=":form:msgs" />
+
+							<f:facet name="header">
+                                Listagem de funcionalidades
+                            </f:facet>
+
+							<p:column sortBy="#{lst.id}" style="width: 40px">
+								<f:facet name="header">
+									<h:outputText value="Id" />
+								</f:facet>
+								<h:outputText value="#{lst.id}" />
+							</p:column>
+
+							<p:column sortBy="#{lst.ativo}" style="width: 60px">
+								<f:facet name="header">
+									<h:outputText value="Ativo" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:selectBooleanButton disabled="true" value="#{lst.ativo}"
+											onLabel="Sim" offLabel="Não" />
+									</f:facet>
+									<f:facet name="input">
+										<p:selectBooleanButton value="#{lst.ativo}" onLabel="Sim"
+											offLabel="Não" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.pagina}">
+								<f:facet name="header">
+									<h:outputText value="Pagina" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.pagina}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.pagina}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.indice}">
+								<f:facet name="header">
+									<h:outputText value="Indice" />
+								</f:facet>
+								<h:outputText value="#{lst.indice}" />
+							</p:column>
+
+							<p:column sortBy="#{lst.descricao}">
+								<f:facet name="header">
+									<h:outputText value="Descricao" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.descricao}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.descricao}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column sortBy="#{lst.perfil.descricao}" style="width: 100px">
+								<f:facet name="header">
+									<h:outputText value="Perfil" />
+								</f:facet>
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{lst.perfil.descricao}" />
+									</f:facet>
+									<f:facet name="input">
+										<h:inputText value="#{lst.perfil.descricao}" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+							<p:column style="width:30px; height: 30px">
+								<f:facet name="header">
+									<h:outputText value="Editar" />
+								</f:facet>
+								<p:rowEditor />
+							</p:column>
+
+						</p:dataTable>
+					</p:panel>
+				</p:tab>
+			</p:tabView>
+
+			<p:dialog id="dialog" header="Confirmação" widgetVar="dlg1"
+				minHeight="40" closable="true">
+
+				<p:outputPanel deferred="true" deferredMode="visible">
+					<p:outputLabel id="label" value="Confirmar a exclusão do perfil?" />
+				</p:outputPanel>
+				<p:separator />
+				<p:commandButton value="Sim"
+					actionListener="#{usuarioView.excluirPerfil()}" update="@form"
+					icon="ui-icon-check" />
+				<p:commandButton value="Não" update="@form" icon="ui-icon-check" />
+			</p:dialog>
+
+		</p:panel>
+	</ui:composition>
+</h:body>
+</html>

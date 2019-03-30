@@ -1,0 +1,202 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<title></title>
+	<style>
+	<!--
+	   .logo {
+	      font-size: 18px !important;
+	      font-style: normal !important;
+	      font-weight: 600 !important;
+	      padding-right: 10px !important;
+	      text-decoration:none !important; 
+	   }
+	   -->
+	</style>
+</h:head>
+<h:body>
+
+	<h:form id="form_top">
+
+		<p:notificationBar position="top" effect="slide" styleClass="top"
+			style="height: 15px; padding: 0px !important; border: 0px !important" autoDisplay="true" 
+			rendered="#{usuarioLoginBean.usuarioLogador.NaoTemCorretora()}">
+			<p:toolbar rendered="true" style="border: 0px !important;">
+				<f:facet name="left">
+					<h:outputLabel value="Você está explorante a versão de testes." />
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+					
+					<p:commandLink action="#{corretoraView.novaAssinatura()}">
+						<h:outputText
+							value="Assine agora para ter o sistema exclusivo para sua corretora."
+							style="text-decoration: underline !important;" />
+					</p:commandLink>
+				</f:facet>
+			</p:toolbar>
+		</p:notificationBar>
+
+		<p:separator style="margin-top: 20px; margin-bottom: 20px"
+			rendered="#{usuarioLoginBean.usuarioLogador.NaoTemCorretora()}" />
+
+		<p:menubar autoDisplay="false" style="margin-bottom: -2%;">
+
+			<p:submenu id="TELA_USUARIOS" label="Usuario" icon="fa fa-user">
+				<p:menuitem icon="fa fa-binoculars" value="Consultar" ajax="false"
+					rendered="#{usuarioLoginBean.autorizador('TELA_USUARIOS')}"
+					action="#{usuarioView.adicionarUsuario()}" update="form_top" />
+
+				<p:menuitem icon="fa fa-binoculars" value="Consultar" ajax="false"
+					rendered="#{!usuarioLoginBean.autorizador('TELA_USUARIOS')}"
+					action="#{usuarioView.mostrarUsuarioNaoAdm()}" update="form_top" />
+			</p:submenu>
+
+			<p:submenu id="TELA_RECEITAS" icon="fa fa-money" label="Receitas"
+				rendered="#{usuarioLoginBean.autorizador('TELA_RECEITAS')}">
+
+				<p:menuitem value="Cadastrar comissão" id="TELA_RECEITAS_CADASTRO"
+					rendered="#{usuarioLoginBean.autorizador('TELA_RECEITAS_CADASTRO')}"
+					url="cadastrarlancamentoview.jsf" icon="fa fa-pencil-square-o" />
+
+				<p:menuitem value="Consultar comissão" url="principalview.jsf"
+					id="TELA_RECEITAS_CONSULTA"
+					rendered="#{usuarioLoginBean.autorizador('TELA_RECEITAS_CONSULTA')}"
+					icon="fa fa-binoculars" />
+
+			</p:submenu>
+
+			<p:submenu id="TELA_SEGURADORAS"
+				rendered="#{usuarioLoginBean.autorizador('TELA_SEGURADORAS')}"
+				icon="fa fa-university" label="Baixa de Comissão">
+				<p:menuitem icon="fa fa-cloud-upload" value="Porto Seguro"
+					url="uploadportoview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Azul"
+					url="uploadazulview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Bradesco"
+					url="uploadbradescoview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Allianz"
+					url="uploadallianzview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Mapfre"
+					url="uploadmapfreview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Sul America"
+					url="uploadsulamericaview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Suhai"
+					url="uploadsuhaiview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Tokio Marine"
+					url="uploadtokiomarineview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="HDI"
+					url="uploadhdiview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Sompo"
+					url="uploadmaritimaview.jsf" />
+			</p:submenu>
+
+			<p:submenu id="TELA_PRODUTORES" icon="fa fa-users" label="Segurados"
+				rendered="#{usuarioLoginBean.autorizador('TELA_PRODUTORES')}">
+				<p:menuitem rendered="false" icon="fa fa-cloud-upload"
+					value="Importar segurados" url="uploadpdfprodutorview.jsf" />
+				<p:menuitem icon="fa fa-binoculars" value="Consultar"
+					url="produtorview.jsf" />
+			</p:submenu>
+
+			<p:submenu id="TELA_APOLICE" icon="fa fa-leanpub" label="Apolice"
+				rendered="#{usuarioLoginBean.autorizador('TELA_APOLICE')}">
+
+				<p:submenu label="Importar" icon="fa fa-cloud-upload">
+					<p:menuitem icon="fa fa-cloud-upload" value="Mapfre"
+						url="uploadmapfreapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="Suhai"
+						url="uploadsuhaiapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="HDI"
+						url="uploadhdiapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="Porto"
+						url="uploadportoapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="Azul"
+						url="uploadazulapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="Bradesco"
+						url="uploadbradescoapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="Sompo"
+						url="uploasompoapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="Tokio Marine"
+						url="uploatokiomarineapolice.jsf" />
+					<p:menuitem icon="fa fa-cloud-upload" value="Sul América"
+						url="uploasulamericaapolice.jsf" />
+
+				</p:submenu>
+				<p:menuitem value="Cadastrar" url="apolicecadastro.jsf"
+					icon="fa fa-pencil-square-o" />
+				<p:menuitem value="Consultar" url="apoliceview.jsf"
+					icon="fa fa-binoculars" />
+			</p:submenu>
+
+			<p:submenu id="TELA_NOTAS" icon="fa fa-archive" label="Notas"
+				rendered="#{usuarioLoginBean.autorizador('TELA_NOTAS')}">
+
+				<p:menuitem icon="fa fa fa-binoculars" value="Consultar"
+					action="#{notaView.notaView()}" />
+			</p:submenu>
+			
+			<p:submenu id="TELA_AUDITORIA" icon="fa fa-archive" label="Auditoria"
+				rendered="#{usuarioLoginBean.autorizador('TELA_AUDITORIA')}">
+
+				<p:menuitem icon="fa fa fa-binoculars" value="Consultar"
+					action="#{auditoriaView.auditoria()}" />
+			</p:submenu>
+
+			<p:submenu id="TELA_SINISTRO" icon="fa fa-ambulance" label="Sinistro"
+				rendered="false">
+				<p:menuitem icon="fa fa fa-pencil-square-o" value="Cadastrar"
+					action="#{sinistroView.novo()}" />
+				<p:menuitem icon="fa fa fa-binoculars" value="Consultar"
+					url="sinistroview.jsf" />
+			</p:submenu>
+
+			<p:submenu id="TELA_DESPESAS" icon="fa fa-credit-card"
+				label="Despesas"
+				rendered="#{usuarioLoginBean.autorizador('TELA_DESPESAS')}">
+				<p:menuitem icon="fa fa-chain" value="Categorias"
+					url="cadastrarcategoriaview.jsf" />
+				<p:menuitem icon="fa fa-binoculars" value="Consultar"
+					url="cadastrarmovimentacoesview.jsf" />
+				<p:menuitem icon="fa fa-cloud-upload" value="Importar"
+					url="uploaddespesaview.jsf" />
+			</p:submenu>
+
+			<p:submenu id="TELA_RELATORIOS" label="Relatórios"
+				icon="fa fa-bar-chart-o"
+				rendered="#{usuarioLoginBean.autorizador('TELA_RELATORIOS')}">
+				<p:menuitem icon="fa fa-line-chart" value="Receitas"
+					url="graficoview.jsf" />
+				<p:menuitem icon="fa fa-area-chart" value="Despesas"
+					url="graficocategoriaview.jsf" />
+				<p:menuitem icon="fa fa-pie-chart" value="Conciliação"
+					url="conciliacaoview.jsf" />
+				<p:menuitem icon="fa fa-list-alt" value="Apuração financeira"
+					url="extratoview.jsf" rendered="#{usuarioLoginBean.autorizador('TELA_APURACAO')}" />
+			</p:submenu>
+
+			<p:menuitem value="Sair" icon="fa fa-close" ajax="false"
+				action="#{usuarioLoginBean.logOut()}" />
+
+			<f:facet name="options">
+					<h:link outcome="graficoview.jsf">
+						<p:graphicImage name="images/logo/logo1.png" height="30" />
+<!-- 						<p:graphicImage name="images/logo/icon.png" height="30" /> -->
+					</h:link>
+			</f:facet>
+
+		</p:menubar>
+
+		<br />
+		<br />
+	</h:form>
+</h:body>
+</html>
+

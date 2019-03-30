@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<f:metadata>
+		<f:event listener="#{usuarioView.inicializarPerfis()}"
+			type="preRenderView" />
+	</f:metadata>
+	<ui:composition template="template.xhtml">
+		<ui:define name="content">
+
+			<p:ajaxStatus onstart="PF('statusDialog').show()"
+				onsuccess="PF('statusDialog').hide()"></p:ajaxStatus>
+			<p:dialog modal="true" widgetVar="statusDialog" draggable="false"
+				closable="false">
+				<p:graphicImage name="images/load.gif" width="80" height="50" />
+			</p:dialog>
+
+			<h:form id="form">
+				<p:messages id="msgs" showDetail="true" showSummary="true"
+					closable="true" />
+				<p:tabView activeIndex="#{usuarioView.indexTab}">
+					<p:tab title="Usuarios">
+						<p:panel id="basic" header="Usuários" footer=" "
+							style="margin-bottom:20px">
+							<p:panelGrid columns="4" cellpadding="5">
+
+								<p:outputLabel for="nome" value="Nome:" />
+								<p:inputText id="nome" value="#{usuarioView.usuarioBean.nome}"
+									label="Nome" required="false" requiredMessage="Informe o nome" />
+
+								<p:outputLabel for="login" value="Login: " />
+								<p:inputText id="login" value="#{usuarioView.usuarioBean.login}"
+									label="Login" required="false"
+									requiredMessage="Informe um login" />
+
+								<p:outputLabel for="senha" value="Senha:" />
+								<p:password id="senha" value="#{usuarioView.usuarioBean.senha}"
+									label="Senha" required="false"
+									requiredMessage="Informe uma senha" />
+
+								<p:outputLabel for="email" value="E-mail:" />
+								<p:inputText id="email" value="#{usuarioView.usuarioBean.email}"
+									label="Senha" required="false"
+									requiredMessage="Informe um email" />
+
+								<p:outputLabel for="console" value="Perfil:" />
+								<p:selectOneMenu id="console"
+									value="#{usuarioView.usuarioBean.perfil}" style="width:125px"
+									converter="#{usuarioView.conversorPerfil}">
+									<f:selectItem itemLabel="selecione" />
+									<f:selectItems value="#{usuarioView.perfis}" var="perfil"
+										itemValue="#{perfil}" itemLabel="#{perfil.descricao}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel for="advanced" value="Temas:" />
+								<p:themeSwitcher id="advanced" style="width:165px" effect="fade"
+									value="#{usuarioView.tema}" required="false"
+									requiredMessage="Escolha um tema">
+									<f:selectItem itemLabel="Escolha um tema" itemValue="" />
+									<f:selectItems value="#{usuarioView.temas}" var="theme"
+										itemLabel="#{theme}" itemValue="#{theme}" />
+									<p:ajax listener="#{usuarioView.updateTema()}" />
+								</p:themeSwitcher>
+
+							</p:panelGrid>
+							<p:commandButton value="Salvar" ajax="false" id="withIcon"
+								actionListener="#{usuarioView.savarUsuario()}"
+								icon="ui-icon-disk" />
+
+							<p:separator />
+
+							<p:dataTable id="tbl" var="lst" value="#{usuarioView.usuarios}"
+								editable="true" reflow="true"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+								selectionMode="single" rowKey="#{lst.id}" sortBy="#{lst.id}"
+								style="margin-bottom:20px" resizableColumns="true">
+
+								<p:ajax event="rowEdit" listener="#{usuarioView.onEdit}"
+									update=":form:msgs" />
+								<p:ajax event="rowEditCancel" listener="#{usuarioView.onCancel}"
+									update=":form:msgs" />
+
+								<f:facet name="header">
+                                Listagem de usuários
+                            </f:facet>
+
+								<p:column sortBy="#{lst.id}">
+									<f:facet name="header">
+										<h:outputText value="Id" />
+									</f:facet>
+									<h:outputText value="#{lst.id}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.nome}">
+									<f:facet name="header">
+										<h:outputText value="Nome" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.nome}" />
+										</f:facet>
+										<f:facet name="input">
+											<h:inputText value="#{lst.nome}" />
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.login}">
+									<f:facet name="header">
+										<h:outputText value="Login" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.login}" />
+										</f:facet>
+										<f:facet name="input">
+											<h:inputText value="#{lst.login}" />
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.perfil.descricao}">
+									<f:facet name="header">
+										<h:outputText value="Perfil" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.perfil.descricao}" />
+										</f:facet>
+										<f:facet name="input">
+											<p:selectOneMenu value="#{lst.perfil}" style="width:125px"
+												converter="#{usuarioView.conversorPerfil}">
+												<f:selectItem itemLabel="selecione" />
+												<f:selectItems value="#{usuarioView.perfis}" var="perfil"
+													itemValue="#{perfil}" itemLabel="#{perfil.descricao}" />
+											</p:selectOneMenu>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.senha}">
+									<f:facet name="header">
+										<h:outputText value="Senha" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.senha}"   style="color: #373737" />
+										</f:facet>
+										<f:facet name="input">
+											<p:password value="#{lst.senha}" redisplay="true" />
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.email}">
+									<f:facet name="header">
+										<h:outputText value="E-mail" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.email}" />
+										</f:facet>
+										<f:facet name="input">
+											<h:inputText value="#{lst.email}" />
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.tema}">
+									<f:facet name="header">
+										<h:outputText value="Tema" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.tema}" />
+										</f:facet>
+										<f:facet name="input">
+
+											<p:themeSwitcher id="ad" style="width:165px" effect="fade"
+												value="#{usuarioView.tema}" required="true"
+												requiredMessage="Escolha um tema">
+												<f:selectItem itemLabel="Escolha um tema" itemValue="" />
+												<f:selectItems value="#{usuarioView.temas}" var="theme"
+													itemLabel="#{theme}" itemValue="#{theme}" />
+												<p:ajax listener="#{usuarioView.updateTema()}" />
+											</p:themeSwitcher>
+
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column style="width:50px; height: 40px;text-align: center;">
+									<f:facet name="header">
+										<h:outputText value="Editar" />
+									</f:facet>
+									<p:rowEditor />
+								</p:column>
+
+								<p:column style="width: 50px;text-align: center;">
+									<f:facet name="header">
+										<h:outputText value="Excluir" />
+									</f:facet>
+									<p:commandLink action="#{usuarioView.removerUsuario()}"
+										update="@form" immediate="true">
+										<f:setPropertyActionListener
+											target="#{usuarioView.usuarioBean}" value="#{lst}" />
+										<p:graphicImage name="images/trash-icon.png" height="20"
+											width="20" />
+										<p:confirm header="Confirmação" message="Confirmar exclusão?"
+											icon="ui-icon-alert" />
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade" message="Confirmar exclusão?">
+								<p:commandButton value="Sim" type="button" update="@form"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+								<p:commandButton value="Não" type="button" update="@form"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+						</p:panel>
+					</p:tab>
+					<p:tab title="Perfil Funcionalidade">
+						<ui:include src="perfilfuncionalidade.xhtml" />
+					</p:tab>
+					<p:tab title="Corretora" rendered="#{usuarioLoginBean.usuarioLogador.temCorretora()}">
+						<ui:include src="corretora.xhtml"></ui:include>
+					</p:tab>
+				</p:tabView>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

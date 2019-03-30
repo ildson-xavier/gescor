@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<link rel="icon" type="image/png" sizes="16x16" href="../resources/images/fav/favicon-16x16.png"/>
+
+	<h:outputStylesheet name="./css/default.css" />
+	<h:outputStylesheet name="./css/cssLayout.css" />
+	
+	<h:outputScript library="js" name="jquery.maskMoney.min.js"/>
+	<h:outputScript library="js" name="ccomissao.js"/>
+	
+	<title>Gescor</title>
+</h:head>
+
+<h:body>
+
+	<div id="top">
+		<ui:insert name="top">
+			<ui:include src="top.xhtml"></ui:include>
+		</ui:insert>
+	</div>
+
+<!-- 	 <div id="left"> -->
+<!-- 		<ui:insert name="ledt"> -->
+<!-- 			<ui:include src="template3.xhtml"></ui:include> -->
+<!-- 		</ui:insert> -->
+<!-- 	</div> -->
+
+	<div id="content" class="center_content">
+		<ui:insert name="content">Content</ui:insert>
+	</div>
+
+	<div id="">
+		<ui:insert name="bottom">
+			<ui:include src="rodape.xhtml"></ui:include>
+		</ui:insert>
+	</div>
+
+</h:body>
+
+</html>

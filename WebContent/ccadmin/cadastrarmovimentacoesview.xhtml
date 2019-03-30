@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:body>
+	<ui:composition template="template.xhtml">
+
+		<f:metadata>
+			<f:event listener="#{categoriaView.carregarTipos()}"
+				type="preRenderView"></f:event>
+		</f:metadata>
+
+		<ui:define name="content">
+			<h:form id="form" prependId="false">
+				<p:messages id="msgs" showDetail="true" closable="true" />
+				<p:panel id="basic" header="Consulta/Cadastro de Despesas"
+					footer=" " style="margin-bottom:20px">
+
+					<p:fieldset legend="Filtro" toggleable="true" collapsed="false"
+						toggleSpeed="500">
+						<p:calendar id="ini" placeholder="Data inicial: "
+							value="#{categoriaView.dataInicial}" showOn="button"
+							navigator="true" locale="pt_BR" mask="true" pattern="dd/MM/yyyy">
+						</p:calendar>
+
+						<p:calendar id="fin" placeholder="Data final:"
+							value="#{categoriaView.dataFinal}" showOn="button"
+							navigator="true" locale="pt_BR" mask="true" pattern="dd/MM/yyyy">
+						</p:calendar>
+
+						<p:outputLabel for="des" value="Despesa: " />
+						<p:inputText id="des" value="#{categoriaView.subTipo}" />
+
+						<p:commandButton value="Pesquisar" ajax="false" immediate="false"
+							action="#{categoriaView.listarCategoriasPorFiltro()}">
+						</p:commandButton>
+					</p:fieldset>
+					<p:separator />
+
+					<p:tabView value="#{categoriaView.categorias}" var="item"
+						dynamic="true">
+						<p:tab title="#{item.tipo}">
+							<p:panelGrid id="grid">
+								<p:commandButton value="Incluir despesa para #{item.tipo}"
+									ajax="true" oncomplete="PF('dlg').show();" process="@this"
+									update="@form:display">
+									<f:setPropertyActionListener
+										target="#{categoriaView.categoria}" value="#{item}" />
+								</p:commandButton>
+							</p:panelGrid>
+
+							<p:separator />
+							<p:dataTable id="tbl1" var="lst" value="#{item.lancamentos}"
+								editable="true" lazy="false"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown} {Exporters}"
+								paginator="true" rows="10" rowsPerPageTemplate="5,10,15"
+								selectionMode="single" rowKey="#{lst.id}"
+								sortBy="#{lst.periodo}" reflow="true" style="margin-bottom:20px">
+
+								<p:ajax event="rowEdit" listener="#{categoriaView.onEditMov}"
+									update=":form:msgs" />
+								<p:ajax event="rowEditCancel"
+									listener="#{categoriaView.onCancelMov}" update=":form:msgs" />
+
+								<f:facet name="header">
+                                Listagem de lancamentos
+                                </f:facet>
+
+								<f:facet name="{Exporters}">
+									<h:commandLink>
+										<p:graphicImage name="images/excel.png" width="26" />
+										<p:dataExporter type="xls" target="tbl1" fileName="lst" />
+									</h:commandLink>
+
+									<h:commandLink>
+										<p:graphicImage name="images/pdf.png" width="26" />
+										<p:dataExporter type="pdf" target="tbl1" fileName="lst" />
+									</h:commandLink>
+								</f:facet>
+
+								<p:column sortBy="#{lst.id}" exportable="false">
+									<f:facet name="header">
+										<h:outputText value="Id" />
+									</f:facet>
+									<h:outputText value="#{lst.id}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.periodo}">
+									<f:facet name="header">
+										<h:outputText value="Data" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.periodo}">
+												<f:convertDateTime locale="pt_BR" pattern="dd/MM/yyyy" />
+											</h:outputText>
+										</f:facet>
+										<f:facet name="input">
+											<p:calendar id="dtinclusao" locale="pt_BR"
+												value="#{lst.periodo}" showOn="button" pattern="dd/MM/yyyy" />
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.categoria.tipo}">
+									<f:facet name="header">
+										<h:outputText value="Categoria" />
+									</f:facet>
+									<h:outputText value="#{lst.categoria.tipo}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.subTipo.descricao}">
+									<f:facet name="header">
+										<h:outputText value="Tipo" />
+									</f:facet>
+									<h:outputText value="#{lst.subTipo.descricao}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.subTipo.custo}">
+									<f:facet name="header">
+										<h:outputText value="Custo" />
+									</f:facet>
+									<h:outputText value="#{lst.subTipo.custo}" />
+								</p:column>
+
+								<p:column sortBy="#{lst.valor1}">
+									<f:facet name="header">
+										<h:outputText value="Valor Total" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.valor1}">
+												<f:convertNumber type="currency" currencySymbol="R$"
+													locale="pt" />
+											</h:outputText>
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="#{lst.valor1}" styleClass="js-decimal">
+												<f:convertNumber pattern="#,##0.00;-#,##0.00"
+													type="currency" currencySymbol="R$" locale="pt" />
+											</p:inputText>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.valor3}">
+									<f:facet name="header">
+										<h:outputText value="Valor Propor." />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.valor3}">
+												<f:convertNumber type="currency" currencySymbol="R$"
+													locale="pt" />
+											</h:outputText>
+										</f:facet>
+										<f:facet name="input">
+											<p:inputText value="#{lst.valor3}" styleClass="js-decimal">
+												<f:convertNumber pattern="#,##0.00;-#,##0.00"
+													type="currency" currencySymbol="R$" locale="pt" />
+											</p:inputText>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.subTipo.percentagem}">
+									<f:facet name="header">
+										<h:outputText value="Percent. %" />
+									</f:facet>
+									<h:outputText value="#{lst.subTipo.percentagem}">
+										<f:convertNumber type="currency" currencySymbol="%"
+											locale="pt" />
+									</h:outputText>
+								</p:column>
+
+								<p:column sortBy="#{lst.status}">
+									<f:facet name="header">
+										<h:outputText value="Status" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.status}" />
+										</f:facet>
+										<f:facet name="input">
+											<p:selectOneRadio id="pago" value="#{lst.status}">
+												<f:selectItem itemLabel="Pago" itemValue="Pago" />
+												<f:selectItem itemLabel="Pendente" itemValue="Pendente" />
+											</p:selectOneRadio>
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column sortBy="#{lst.descricao}">
+									<f:facet name="header">
+										<h:outputText value="Descrição" />
+									</f:facet>
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{lst.descricao}" />
+										</f:facet>
+										<f:facet name="input">
+											<h:inputText value="#{lst.descricao}" />
+										</f:facet>
+									</p:cellEditor>
+								</p:column>
+
+								<p:column style="width:40px; height: 30px" exportable="false"
+									rendered="#{usuarioLoginBean.autorizador('EDITAR')}">
+									<f:facet name="header">
+										<h:outputText value="Editar" />
+									</f:facet>
+									<p:rowEditor rendered="#{usuarioView.isAdmin()}" />
+								</p:column>
+
+								<p:column style="width: 5%" exportable="false"
+									rendered="#{usuarioLoginBean.autorizador('EXCLUIR')}">
+									<f:facet name="header">
+										<h:outputText value="Excluir" />
+									</f:facet>
+									<p:commandLink action="#{categoriaView.removerMovimento()}"
+										update="@form">
+										<f:setPropertyActionListener
+											target="#{categoriaView.lancamentoMB}" value="#{lst}" />
+										<p:graphicImage name="images/trash-icon.png" height="20"
+											width="20" />
+<!-- 										<p:confirm header="Confirmação" message="Confirmar exclusão?" -->
+<!-- 											icon="ui-icon-alert" /> -->
+									</p:commandLink>
+								</p:column>
+							</p:dataTable>
+							
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade" message="Confirmar exclusão?">
+								<p:commandButton value="Sim" type="button"
+									styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+								<p:commandButton value="Não" type="button"
+									styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+							</p:confirmDialog>
+						</p:tab>
+					</p:tabView>
+
+
+
+
+
+
+
+					<p:dataTable id="tbl2" var="lst" emptyMessage="Sem informações"
+						value="#{categoriaView.categoriasSum}">
+						<f:facet name="header">
+        						Sintético por categoria
+    						</f:facet>
+
+						<p:column headerText="Categoria">
+							<h:outputText value="#{lst.tipo}" />
+						</p:column>
+
+						<p:column headerText="Valor">
+							<h:outputText value="#{lst.valorSum}">
+								<f:convertNumber type="currency" currencySymbol="R$" locale="pt" />
+							</h:outputText>
+						</p:column>
+						<p:columnGroup type="footer">
+							<p:row>
+								<p:column footerText="Totais:" />
+								<p:column>
+									<f:facet name="footer">
+										<h:outputText value="#{categoriaView.sumTotal}">
+											<f:convertNumber type="currency" currencySymbol="R$" />
+										</h:outputText>
+									</f:facet>
+								</p:column>
+							</p:row>
+						</p:columnGroup>
+					</p:dataTable>
+
+					<p:dialog header="Novo movimento" showEffect="fade"
+						responsive="true" hideEffect="fade" widgetVar="dlg" modal="true"
+						resizable="true">
+
+						<h:outputScript library="js" name="jquery.maskMoney.min.js" />
+						<h:outputScript library="js" name="ccomissao.js" />
+						<script type="text/javascript">
+							jQuery(function($) {
+								$(".js-decimal").maskMoney({
+									symbol : "R$",
+									decimal : ",",
+									thousands : "."
+								});
+							});
+						</script>
+
+						<p:panel id="panel">
+							<h:panelGrid id="display" columns="3" cellpadding="5">
+
+								<p:outputLabel for="cat" value="Categoria: " />
+								<p:inputText id="cat" disabled="true"
+									value="#{categoriaView.categoria.tipo}" />
+								<h:inputHidden id="categ"
+									value="#{categoriaView.categoria.tipo}" />
+
+								<p:outputLabel for="perio" value="Data: " />
+								<p:calendar id="perio"
+									value="#{categoriaView.lancamentoMB.periodo}" required="false"
+									showOn="button" navigator="true" locale="pt_BR" mask="true"
+									pattern="dd/MM/yyyy">
+								</p:calendar>
+								<h:inputHidden />
+
+								<p:outputLabel for="vlr-dialog" value="Valor: " />
+								<p:inputText id="vlr-dialog" required="false"
+									styleClass="js-decimal" onkeyup="somenteNumeros(this);"
+									value="#{categoriaView.lancamentoMB.valor3}" placeholder="0,00">
+									<f:convertNumber pattern="#,##0.00;-#,##0.00" type="currency"
+										currencySymbol="R$" locale="pt" />
+								</p:inputText>
+								<h:inputHidden />
+
+								<p:outputLabel for="tipo" value="Tipo: " />
+								<p:selectOneMenu id="tipo" required="false"
+									requiredMessage="Selecione o tipos de despesa"
+									value="#{categoriaView.subtipo.descricao}" effect="fold"
+									autoWidth="true" label="Selecione" title="Selecione"
+									editable="false" filter="true">
+									<f:selectItems value="#{categoriaView.tipos}" />
+								</p:selectOneMenu>
+								<h:inputHidden />
+
+								<h:outputText value="Pago? " />
+								<p:selectOneRadio id="pag"
+									value="#{categoriaView.lancamentoMB.status}">
+									<f:selectItem itemLabel="Pago" itemValue="Pago" />
+									<f:selectItem itemLabel="Pendente" itemValue="Pendente" />
+								</p:selectOneRadio>
+								<h:inputHidden />
+
+								<p:outputLabel for="desc" value="Descrição: " />
+								<p:inputText id="desc"
+									value="#{categoriaView.lancamentoMB.descricao}" />
+								<h:inputHidden />
+
+								<p:commandButton value="Salvar" ajax="true"
+									actionListener="#{categoriaView.adicionarMovimento()}"
+									update="@form" oncomplete="PF('dlg').hide();">
+								</p:commandButton>
+
+							</h:panelGrid>
+						</p:panel>
+
+						<script>
+							function somenteNumeros(num) {
+								configurarMoeda();
+							}
+
+							function configurarMoeda() {
+								$(".js-decimal").maskMoney({
+									decimal : ",",
+									thousands : ".",
+									allowZero : true,
+									allowNegative : true
+								});
+							}
+
+							$(document).ready(function() {
+								configurarMoeda();
+							});
+						</script>
+
+					</p:dialog>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

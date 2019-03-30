@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sintetico" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f18b580b-c161-40ce-b66c-59baf6e8760b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="apolice" class="java.lang.Integer">
+		<fieldDescription><![CDATA[apolice]]></fieldDescription>
+	</field>
+	<field name="categoria" class="br.com.cc.entidade.Categoria">
+		<fieldDescription><![CDATA[categoria]]></fieldDescription>
+	</field>
+	<field name="class" class="java.lang.Class">
+		<fieldDescription><![CDATA[class]]></fieldDescription>
+	</field>
+	<field name="classificacao" class="java.lang.Integer">
+		<fieldDescription><![CDATA[classificacao]]></fieldDescription>
+	</field>
+	<field name="comissao" class="java.lang.Double">
+		<fieldDescription><![CDATA[comissao]]></fieldDescription>
+	</field>
+	<field name="contador" class="java.lang.Long">
+		<fieldDescription><![CDATA[contador]]></fieldDescription>
+	</field>
+	<field name="dataIncluisao" class="java.util.Date">
+		<fieldDescription><![CDATA[dataIncluisao]]></fieldDescription>
+	</field>
+	<field name="descricao" class="java.lang.String">
+		<fieldDescription><![CDATA[descricao]]></fieldDescription>
+	</field>
+	<field name="historico" class="java.lang.String">
+		<fieldDescription><![CDATA[historico]]></fieldDescription>
+	</field>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[id]]></fieldDescription>
+	</field>
+	<field name="mesAno" class="java.lang.String">
+		<fieldDescription><![CDATA[mesAno]]></fieldDescription>
+	</field>
+	<field name="parcela" class="java.lang.Integer">
+		<fieldDescription><![CDATA[parcela]]></fieldDescription>
+	</field>
+	<field name="periodo" class="java.util.Date">
+		<fieldDescription><![CDATA[periodo]]></fieldDescription>
+	</field>
+	<field name="produtor" class="java.lang.String">
+		<fieldDescription><![CDATA[produtor]]></fieldDescription>
+	</field>
+	<field name="seguradora" class="java.lang.String">
+		<fieldDescription><![CDATA[seguradora]]></fieldDescription>
+	</field>
+	<field name="situacao" class="java.lang.Integer">
+		<fieldDescription><![CDATA[situacao]]></fieldDescription>
+	</field>
+	<field name="status" class="java.lang.String">
+		<fieldDescription><![CDATA[status]]></fieldDescription>
+	</field>
+	<field name="subTipo" class="br.com.cc.entidade.SubTipo">
+		<fieldDescription><![CDATA[subTipo]]></fieldDescription>
+	</field>
+	<field name="tipo" class="java.lang.String">
+		<fieldDescription><![CDATA[tipo]]></fieldDescription>
+	</field>
+	<field name="valor1" class="java.lang.Double">
+		<fieldDescription><![CDATA[valor1]]></fieldDescription>
+	</field>
+	<field name="valor2" class="java.lang.Double">
+		<fieldDescription><![CDATA[valor2]]></fieldDescription>
+	</field>
+	<field name="valor3" class="java.lang.Double">
+		<fieldDescription><![CDATA[valor3]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="200" y="15" width="261" height="38" uuid="b08c24f7-7e54-4566-aa89-d3af8434f0fb"/>
+				<textElement>
+					<font size="24"/>
+				</textElement>
+				<text><![CDATA[Teste de relatorio]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="100" y="2" width="100" height="20" uuid="ebeb51b6-7d96-4890-a96c-ff34a3adf75d"/>
+				<text><![CDATA[seguradora]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="2" width="100" height="20" uuid="cebe6a2c-a9ea-432c-bc55-7ec1a0784950"/>
+				<text><![CDATA[produtor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="2" width="100" height="20" uuid="0afe5c7b-4063-4804-a93b-6376603d5029"/>
+				<text><![CDATA[valor3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="0" width="100" height="20" uuid="f3bd084d-741b-40e9-b469-1ef5c986660e"/>
+				<text><![CDATA[comissao]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="2bf50c8b-a688-4801-8b30-4877483f8e27"/>
+				<text><![CDATA[mesAno]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="71" splitType="Stretch">
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="6db09061-1976-4ada-97fa-a25164de5b0b"/>
+				<textFieldExpression><![CDATA[$F{seguradora}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="b3c982d2-4942-4b34-a39f-974e232d4664"/>
+				<textFieldExpression><![CDATA[$F{produtor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="100" height="20" uuid="40593804-ed37-4a2c-ad5f-a3482b509aa3"/>
+				<textFieldExpression><![CDATA[$F{valor3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="100" height="20" uuid="a41261ac-13ca-464d-ba25-ca89dc67cddd"/>
+				<textFieldExpression><![CDATA[$F{comissao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="367bea31-e2f7-4704-ab74-41e8726225f6"/>
+				<textFieldExpression><![CDATA[$F{mesAno}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
